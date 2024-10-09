@@ -1,0 +1,62 @@
+// these styles are globaly used by all. (used trew element tags or other selectors except classes and id's
+@import '../../node_modules/bootstrap/scss/bootstrap';
+@import '../scss/variables.scss';
+
+*,*::before,*::after{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline-color: $dali-white;
+}
+
+:focus-visible{
+  outline: 2px solid;
+  outline-offset: 2px;
+  transition: none;
+  mix-blend-mode: difference;
+}
+
+body{
+  font-family: 'trebuchet ms', 'century gothic', helvetica, sans-serif, verdana;
+  font-size: 16px;
+  // letter-spacing: 0.12rem;
+  // word-spacing: 0.16rem;
+}
+
+#root{
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+// all styles here are specified syles for components (is re-used by the same component)
+@import '../scss/components/background.scss';
+@import '../scss/components/form.scss';
+@import '../scss/components/card.scss';
+@import '../scss/components/header.scss';
+@import '../scss/components/dropdown.scss';
+@import '../scss/components/popup.scss';
+@import '../scss/components/sidebar.scss';
+@import '../scss/components/accordion.scss';
+@import '../scss/components/loadingScreen.scss';
+@import '../scss/components/invisibleLink.scss';
+@import '../scss/components/searchBar.scss';
+
+
+
+// all styles here are specified styles for prefilled components.
+@import '../scss/components/prefilled/dropdownUserInfo.scss';
+@import '../scss/components/prefilled/popupOndersteuning.scss';
+@import '../scss/components/prefilled/iconButtonBox.scss';
+@import '../scss/externalComponents/pdfCiewerComponent.scss';
+@import '../scss/components/leftSidebar.scss';
+
+// all styles here are specified styles for whole pages (cannot be re-used)
+@import '../scss/pages/Home.scss';
+@import '../scss/pages/Inlog.scss';
+@import '../scss/pages/Bronverwijzingen.scss';
+@import '../scss/pages/Bijlagen.scss';
+@import '../scss/pages/pve.scss';
+@import '../scss/pages/Handboek.scss';
+
+@import './scss/Login.scss';

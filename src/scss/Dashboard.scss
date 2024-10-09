@@ -1,0 +1,31 @@
+.dashboard-container {
+    display: flex;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    padding-left: 300px; // Default expanded width
+    transition: padding-left 0.3s;
+  }
+  
+  .appbar {
+    z-index: 1201; // Ensure it is above the drawer
+    width: calc(100% - 300px);
+    transition: width 0.3s;
+  }
+  
+  .toolbar {
+    min-height: 64px; // Same as sidebar header
+  }
+  
+  .toolbar-spacer {
+    min-height: 64px; // To offset fixed AppBar
+  }
+  
+  .bottom-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  

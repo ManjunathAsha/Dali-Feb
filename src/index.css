@@ -1,0 +1,68 @@
+:root {
+  --white: #fefefeff;
+  --lightgray: rgb(227, 226, 226);
+  --darkgray: #5a5a5a;
+  --fade: rgb(246, 246, 246);
+  --gray: #b7b7b7;
+  --black: #3f3c3c;
+  --red: #d63e5e;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Helvetica";
+}
+
+/* Style for the scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background: rgb(184, 184, 184);
+  background: linear-gradient(
+    90deg,
+    rgba(184, 184, 184, 1) 13%,
+    rgba(237, 237, 237, 1) 40%,
+    rgba(236, 236, 236, 1) 63%,
+    rgba(184, 184, 184, 1) 100%
+  );
+  border-top: 3px solid #bebebe;
+  border-bottom: 2px solid #bebebe;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(184, 184, 184);
+  background: linear-gradient(
+    90deg,
+    rgb(113, 113, 113) 13%,
+    rgba(237, 237, 237, 1) 40%,
+    rgba(236, 236, 236, 1) 63%,
+    rgba(184, 184, 184, 1) 100%
+  );
+}
+
+/* React Quill Styles */
+.custom-quill .ql-toolbar {
+  background-color: #f0f0f0;
+  border: 1px solid #cacaca;
+}
+
+.custom-quill .ql-editor {
+  color: #333;
+  background-color: #ffffff;
+}
+

@@ -1,0 +1,139 @@
+@function hexToRGB($hex) {
+  @return red($hex), green($hex), blue($hex);
+}
+
+// color variables that can be used
+// these are different in from $theme-colors in the way that these do not produce variants
+$dali-black: #222;
+$dali-white: #eee;
+$dali-red: #bd3c5b;
+$dali-turquoise: #07786e;
+$dali-green: #017c21;
+$dali-blue: #0069ce;
+$dali-blue2: #d6d7dc;
+$dali-blue3: #cdd0da;
+$dali-purple: #a700f4;
+$dali-brown: #8e6333;
+$dali-gray-1: #4c4c4c;
+$dali-gray-2: #6b6b6b;
+$dali-gray-3: #898989;
+// --white: #fefefeff;
+// --lightgray: rgb(227, 226, 226);
+// --darkgray: #5a5a5a;
+// --fade: rgb(246, 246, 246);
+// --gray: #b7b7b7;
+// --black: #3f3c3c;
+// --red: #d63e5e;
+// --fadedblue: #d6d7dc;
+// --lightblue: #cdd0da;
+
+$dali-rgb-black: #{hexToRGB($dali-black)};
+$dali-rgb-white: #{hexToRGB($dali-white)};
+$dali-rgb-red: #{hexToRGB($dali-red)};
+$dali-rgb-turquoise: #{hexToRGB($dali-turquoise)};
+$dali-rgb-green: #{hexToRGB($dali-green)};
+$dali-rgb-blue: #{hexToRGB($dali-blue)};
+$dali-rgb-purple: #{hexToRGB($dali-purple)};
+$dali-rgb-brown: #{hexToRGB($dali-brown)};
+$dali-rgb-gray-1: #{hexToRGB($dali-gray-1)};
+$dali-rgb-gray-2: #{hexToRGB($dali-gray-2)};
+$dali-rgb-gray-3: #{hexToRGB($dali-gray-3)};
+
+$upload-text: "Select some files";
+
+// for every theme-color there will be made one variant of a component 
+// each variant has a object with 2 value's these values represent the color they are and the color the text should be to read it comfortable
+// this variable is still in a test fase and is only used in some places(_btn.scss, _modal.scss). results are very good.
+// you need one @each and 2 map.get() functions to use this variable butt this will not show in the web css file so it will reduce code and increase readablity
+$theme-colors : (
+  "black": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-3,
+    "background" : $dali-black,
+	),
+  "white": (
+    "foreground" : $dali-black,
+    "grayscale" : $dali-gray-1,
+    "background" : $dali-white,
+	),
+  "red": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-2,
+    "background" : $dali-red,
+	),
+  "turquoise": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-2,
+    "background" : $dali-turquoise,
+	),
+  "green": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-2,
+    "background" : $dali-green,
+	),
+  "blue": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-2,
+    "background" : $dali-blue,
+	),
+  "purple": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-2,
+    "background" : $dali-purple,
+	),
+  "brown": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-2,
+    "background" : $dali-brown,
+	),
+  "gray-1": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-3,
+    "background" : $dali-gray-1,
+	),
+  "gray-2": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-black,
+    "background" : $dali-gray-2,
+	),
+  "gray-3": (
+    "foreground" : $dali-white,
+    "grayscale" : $dali-gray-1,
+    "background" : $dali-gray-3,
+	),
+);
+
+$modal-sizes: (
+	"sm": (
+    "width" : 25vw,
+    "height": 20vh,
+  ),
+	"md": (
+    "width" : 30vw,
+    "height": 30vh,
+  ),
+	"lg": (
+    "width" : 30vw,
+    "height": 40vh,
+  ),
+	"xl": (
+    "width" : 70vw,
+    "height": 60vh,
+  ),
+	"xxl": (
+    "width" : 95vw,
+    "height": 95vh,
+  ),
+  "fullscreen": (
+    "width" : 100vw,
+    "height": 100vh,
+  ),
+);
+
+$headerFooter-sizes: (
+	"sm": 5vh,
+	"md": 7vh,
+	"lg": 10vh,
+	"xl": 15vh,
+	"xxl": 20vh,
+);
