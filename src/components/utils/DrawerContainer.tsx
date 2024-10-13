@@ -26,7 +26,7 @@ const DrawerContainer: React.FC<DrawerContainerProps> = ({
   children,
 }) => {
   const theme = useTheme();
-  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <>
@@ -40,14 +40,14 @@ const DrawerContainer: React.FC<DrawerContainerProps> = ({
       <Drawer
         anchor="right"
         open={isOpen}
-        variant={isSmDown ? "temporary" : "persistent"}
+        variant={isSmallScreen ? "temporary" : "persistent"}
         sx={{
           width: isOpen ? 400 : 0,
           zIndex: 1,
           flexShrink: 0,
           marginTop: 10,
           "& .MuiDrawer-paper": {
-            width: 400,
+            width: isSmallScreen ? 300 : 400,
             top: `${appBarHeight}px`,
             height: `calc(81vh - ${appBarHeight}px + ${bottomNavHeight}px)`, 
             boxSizing: "border-box",

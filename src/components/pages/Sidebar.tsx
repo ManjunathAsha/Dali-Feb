@@ -11,21 +11,24 @@ import {
   Checkbox,
   Box,
   ListItemButton,
+  IconButton,
+  InputBase,
 } from "@mui/material";
-import {
-  ExpandLess,
-  ExpandMore,
-  MenuBook,
-  AccountTree,
-  NearMe,
-  LocationOn,
-} from "@mui/icons-material";
+import { ExpandLess, ExpandMore, Search } from "@mui/icons-material";
 
 interface SidebarProps {
   isExpanded: boolean;
   toggleSidebar: () => void;
   onItemClick: (page: string) => void;
   drawerWidth: number | string;
+  sidebarItems: SidebarItem[]; // Add SidebarItem interface for dynamic items
+}
+
+interface SidebarItem {
+  title: string;
+  icon: React.ReactNode;
+  page: string;
+  subItems?: string[]; // Optional for items that have sub-items
 }
 
 const APP_BAR_HEIGHT = 65;
@@ -36,43 +39,31 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
   onItemClick,
   drawerWidth,
+  sidebarItems,
 }) => {
   const theme = useTheme();
   const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [openChapter, setOpenChapter] = useState(false);
+  // Manages open states for each item that has sub-items
+  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(
     {}
   );
-  const [selectedItem, setSelectedItem] = useState<string>("chapters");
+  const [selectedItem, setSelectedItem] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const sidebarItems = [
-    {
-      title: "Chapter",
-      icon: <MenuBook />,
-      page: "chapters",
-      subItems: [
-        "01. Planproces",
-        "02. Groenvoorzieningen",
-        "03. Speelvoorzieningen",
-        "04. Weginfrastructuur",
-      ],
-    },
-    { title: "Niveau", icon: <AccountTree />, page: "niveau" },
-    { title: "Woonkern", icon: <NearMe />, page: "woonkern" },
-    { title: "Gebied", icon: <LocationOn />, page: "gebied" },
-  ];
-
-  const handleItemClick = (item: typeof sidebarItems[0]) => {
+  const handleItemClick = (item: SidebarItem) => {
     if (!isExpanded) {
       toggleSidebar();
     } else if (item.subItems) {
-      setOpenChapter(!openChapter);
-      setSelectedItem(item.page);
-    } else {
-      setSelectedItem(item.page);
-      onItemClick(item.page);
+      // Toggle open state for this specific item
+      setOpenItems((prev) => ({
+        ...prev,
+        [item.page]: !prev[item.page],
+      }));
     }
+    setSelectedItem(item.page);
+    if (!item.subItems) onItemClick(item.page);
   };
 
   const handleCheckboxClick = (
@@ -84,120 +75,145 @@ const Sidebar: React.FC<SidebarProps> = ({
     onItemClick("chapters");
   };
 
+  const renderSubItems = (item: SidebarItem) => {
+    // Filter subItems based on the searchTerm input
+    const filteredSubItems = item.page === "onderwerp" && searchTerm
+      ? item.subItems?.filter((subItem) =>
+          subItem.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : item.subItems;
+  
+    return (
+      <Collapse in={openItems[item.page]} timeout="auto" unmountOnExit>
+        <List disablePadding>
+          {(filteredSubItems || item.subItems)?.map((subItem) => (
+            <ListItemButton
+              key={subItem}
+              sx={{
+                pl: 4,
+                py: 0.5,
+                color: "white",
+                borderLeft: "2px solid #FE6B8B",
+                "&:hover": { backgroundColor: "var(--gray)" },
+              }}
+            >
+              <Checkbox
+                edge="start"
+                checked={checkedItems[subItem] || false}
+                onChange={(event) => handleCheckboxClick(subItem, event)}
+                sx={{
+                  color: "white",
+                  "&.Mui-checked": { color: "var(--white)" },
+                  "& .MuiSvgIcon-root": { fontSize: 20 },
+                }}
+              />
+              <ListItemText
+                primary={subItem}
+                primaryTypographyProps={{
+                  variant: "body2",
+                  sx: {
+                    color: "white",
+                    fontWeight: checkedItems[subItem] ? "bold" : "normal",
+                    ml: 2,
+                  },
+                }}
+              />
+            </ListItemButton>
+          ))}
+        </List>
+      </Collapse>
+    );
+  };
+
   const renderSidebarContent = () => (
     <List sx={{ pt: 0 }}>
-      {sidebarItems.map((item, index) => (
-        <Box key={index} sx={{ mb: 0 }}>
+      {sidebarItems.map((item) => (
+        <Box key={item.page} sx={{ mb: 0 }}>
           <ListItemButton
             onClick={() => handleItemClick(item)}
             sx={{
               display: "flex",
+              justifyContent: "center",
               flexDirection: isExpanded ? "row" : "column",
               alignItems: isExpanded ? "flex-start" : "center",
-              justifyContent: "flex-start",
               py: 1.5,
               backgroundColor:
-                selectedItem === item.page ? "var(--black)" : "transparent",
+                selectedItem === item.page ? "var(--red)" : "transparent",
               color: "white",
-              transition: "all 0.3s ease-in-out",
+              transition: "all 0.3s",
               "&:hover": {
                 backgroundColor: "#ff6b8b",
                 "& .MuiListItemIcon-root": { color: "var(--black)" },
-                "& .MuiTypography-root, & .MuiSvgIcon-root": { color: "var(--black)" },
+                "& .MuiTypography-root, & .MuiSvgIcon-root": {
+                  color: "var(--black)",
+                },
               },
             }}
           >
             <ListItemIcon
               sx={{
                 color: "white",
-                minWidth: 40,
+                minWidth: "fit-content",
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                transition: "all 0.3s ease-in-out",
                 alignSelf: "center",
               }}
             >
               {item.icon}
             </ListItemIcon>
-            {isExpanded ? (
+            {isExpanded && (
               <>
                 <ListItemText
                   primary={
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      sx={{ textAlign: "left" }}
-                    >
-                      {item.title}
-                    </Typography>
+                    <Typography variant="body1">{item.title}</Typography>
                   }
-                  sx={{ ml: 2, whiteSpace: "nowrap" }}
+                  sx={{ ml: 2 }}
                 />
                 {item.subItems && (
-                  <Box sx={{ ml: "auto" }}>
-                    {openChapter ? <ExpandLess /> : <ExpandMore />}
+                  <Box
+                    sx={{ ml: "auto", display: "flex", alignSelf: "center" }}
+                  >
+                    {openItems[item.page] ? <ExpandLess /> : <ExpandMore />}
                   </Box>
                 )}
               </>
-            ) : (
-              <Typography
-                variant="caption"
-                fontWeight="bold"
-                sx={{ mt: 1, textAlign: "center" }}
-              >
+            )}
+            {!isExpanded && (
+              <Typography variant="caption" fontWeight="bold" sx={{ mt: 1 }}>
                 {item.title}
               </Typography>
             )}
           </ListItemButton>
-
-          {item.subItems && isExpanded && (
-            <Collapse in={openChapter} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding sx={{ backgroundColor: "#501c28" }}>
-                {item.subItems.map((subItem, subIndex) => (
-                  <ListItemButton
-                    key={subIndex}
-                    sx={{
-                      pl: 4,
-                      py: 0.5,
-                      color: "white",
-                      borderLeft: "2px solid #FE6B8B",
-                      "&:hover": {
-                        backgroundColor: "var(--gray)",
-                        // color: "var(--black)",
-                        // "& .MuiTypography-root": { color: "black" },
-                        // "& .MuiCheckbox-root": { color: "black" },
-                      },
-                    }}
-                  >
-                    <Checkbox
-                      edge="start"
-                      checked={checkedItems[subItem] || false}
-                      onChange={(event) => handleCheckboxClick(subItem, event)}
-                      sx={{
-                        color: "white",
-                        "&.Mui-checked": { color: "var(--black)" },
-                        "& .MuiSvgIcon-root": { fontSize: 20 },
-                      }}
-                    />
-                    <ListItemText
-                      primary={subItem}
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        sx: {
-                          color: "white",
-                          fontWeight: checkedItems[subItem] ? "bold" : "normal",
-                          transition: "color 0.3s",
-                          ml: 2,
-                          alignSelf: "center",
-                        },
-                      }}
-                    />
-                  </ListItemButton>
-                ))}
-              </List>
-            </Collapse>
-          )}
+          {item.subItems &&
+            openItems[item.page] &&
+            item.page === "onderwerp" &&
+            isExpanded && (
+              <Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    backgroundColor: "var(--lightgray)",
+                    borderRadius: "4px",
+                    mt: 1,
+                    mb: 2,
+                    padding: "4px",
+                  }}
+                >
+                  <IconButton sx={{ p: "5px" }} aria-label="search">
+                    <Search />
+                  </IconButton>
+                  <InputBase
+                    placeholder="Zoeken binnen onderwerp"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    sx={{ ml: 1, flex: 1 }}
+                    inputProps={{ "aria-label": "search" }}
+                    size="small"
+                  />
+                </Box>
+              </Box>
+            )}
+          {item.subItems && isExpanded && renderSubItems(item)}
         </Box>
       ))}
     </List>
@@ -208,18 +224,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       variant={isSmDown ? "temporary" : "permanent"}
       open={isExpanded}
       onClose={toggleSidebar}
-      onMouseLeave={() => {
-        if (isExpanded) {
-          toggleSidebar();
-        }
-      }}
+      onMouseLeave={isExpanded ? toggleSidebar : undefined}
       sx={{
         width: isExpanded ? drawerWidth : 80,
-        flexShrink: 0,
         "& .MuiDrawer-paper": {
           width: isExpanded ? drawerWidth : 80,
           backgroundColor: "var(--darkgray)",
-          overflowX: "hidden",
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,

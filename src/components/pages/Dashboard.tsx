@@ -22,6 +22,7 @@ import "../../scss/Dashboard.scss";
 import BottomNavBar from "./BottomNavBar";
 import logo from "../../assets/dali-logo.png";
 import Handbook from "./Handbook/Handbook";
+import { MenuBook, AccountTree, NearMe, LocationOn, Subject } from "@mui/icons-material";
 
 const Dashboard: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
@@ -33,8 +34,45 @@ const Dashboard: React.FC = () => {
 
   const expandedDrawerWidth = 300;
   const collapsedDrawerWidth = 80;
-  const appBarHeight = 64; // Slightly taller app bar for more content
+  const appBarHeight = 64;
   const bottomNavHeight = 60;
+
+  const sidebarItems = [
+    {
+      title: "Chapter",
+      icon: <MenuBook />,
+      page: "chapters",
+      subItems: [
+        "01. Planproces",
+        "02. Groenvoorzieningen",
+        "03. Speelvoorzieningen",
+        "04. Weginfrastructuur",
+      ],
+    },
+    {
+      title: "Niveau",
+      icon: <AccountTree />,
+      page: "niveau",
+    },
+    { title: "Woonkern", icon: <NearMe />, page: "woonkern" },
+    { title: "Gebied", icon: <LocationOn />, page: "gebied" },
+    {
+      title: "Onderwerp",
+      icon: <Subject />,
+      page: "onderwerp",
+      subItems: [
+        "Aanleg groenvoorzieningen",
+        "Aansluitingen particulier perceel op openbare ruimte",
+        "Aanvullingen",
+        "Beleid",
+        "Beschoeiing",
+        "Betonnen bruggen",
+        "Bodemverontreiniging",
+        "Boombescherming",
+        "Borden",
+      ],
+    },
+  ];
 
   const handleSidebarItemClick = (page: string) => {
     setSelectedPage(page);
@@ -195,6 +233,7 @@ const Dashboard: React.FC = () => {
         drawerWidth={
           isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth
         }
+        sidebarItems={sidebarItems}
       />
 
       <Box

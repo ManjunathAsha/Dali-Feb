@@ -2,6 +2,7 @@ import React from 'react';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { Home, Place, Map, FileCopy, Group, Help } from '@mui/icons-material';
 import { useTheme, useMediaQuery } from '@mui/material';
+import Handbook from './Handbook/Handbook';
 
 const BottomNavBar: React.FC = () => {
   const theme = useTheme();
@@ -37,7 +38,7 @@ const BottomNavBar: React.FC = () => {
         },
       }}
     >
-      <BottomNavigationAction label="Home" icon={<Home />} />
+      <BottomNavigationAction label="Home" icon={<Home />} LinkComponent={Handbook} />
       <BottomNavigationAction label="Raadplegen" icon={<Place />} />
       <BottomNavigationAction label="Kaarten" icon={<Map />} />
       <BottomNavigationAction label="Projecten" icon={<FileCopy />} />
