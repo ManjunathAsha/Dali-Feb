@@ -224,7 +224,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       variant={isSmDown ? "temporary" : "permanent"}
       open={isExpanded}
       onClose={toggleSidebar}
-      onMouseLeave={isExpanded ? toggleSidebar : undefined}
       sx={{
         width: isExpanded ? drawerWidth : 80,
         "& .MuiDrawer-paper": {

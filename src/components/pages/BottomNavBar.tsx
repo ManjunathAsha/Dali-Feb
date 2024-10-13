@@ -1,49 +1,90 @@
-import React from 'react';
-import { BottomNavigation, BottomNavigationAction } from '@mui/material';
-import { Home, Place, Map, FileCopy, Group, Help } from '@mui/icons-material';
-import { useTheme, useMediaQuery } from '@mui/material';
-import Handbook from './Handbook/Handbook';
+// BottomNavBar.tsx
+import React from "react";
+import { BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { Book, Place, Map, FileCopy, Group, Help } from "@mui/icons-material";
+import { useTheme, useMediaQuery } from "@mui/material";
 
-const BottomNavBar: React.FC = () => {
+interface BottomNavBarProps {
+  setSelectedPage: React.Dispatch<React.SetStateAction<string>>;
+  selectedPage: string;
+}
+
+const BottomNavBar: React.FC<BottomNavBarProps> = ({ selectedPage, setSelectedPage }) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // Adjust for screen size < 768px
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const handleNavChange = (event: React.SyntheticEvent, newValue: string) => {
+    setSelectedPage(newValue);
+  };
 
   return (
     <BottomNavigation
       showLabels
+      value={selectedPage}
+      onChange={handleNavChange}
       sx={{
-        position: 'fixed',
+        position: "fixed",
         bottom: 0,
         left: 0,
         right: 0,
-        height: 'auto', // Allow the navigation to adjust its height
-        minHeight: isSmallScreen ? '60px' : '70px', // Adjust height for small screens
+        height: "auto",
+        minHeight: isSmallScreen ? "60px" : "70px",
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: '#f5f5f5',
-        display: 'flex',
-        justifyContent: 'space-around', // Evenly space the icons
-        alignItems: 'center',
-        padding: isSmallScreen ? '0 5px' : '0 20px',
-        overflowX: isSmallScreen ? 'auto' : 'hidden', // Enable horizontal scroll on small screens if needed
-        '& .MuiBottomNavigationAction-root': {
-          minWidth: 60, // Force a minimum width to prevent cramping
-          padding: '6px 0', // Adjust padding to fit more items
-          '& .MuiSvgIcon-root': {
-            fontSize: isSmallScreen ? '20px' : '24px', // Smaller icons for small screens
+        backgroundColor: "#f5f5f5",
+        display: "flex",
+        justifyContent: "space-around",
+        alignItems: "center",
+        padding: isSmallScreen ? "0 5px" : "0 20px",
+        overflowX: isSmallScreen ? "auto" : "hidden",
+        "& .MuiBottomNavigationAction-root": {
+          minWidth: 60,
+          padding: "6px 0",
+          "& .MuiSvgIcon-root": {
+            fontSize: isSmallScreen ? "20px" : "24px",
           },
-          '& .MuiBottomNavigationAction-label': {
-            fontSize: isSmallScreen ? '10px' : '14px', // Smaller font for small screens
-            marginTop: isSmallScreen ? '2px' : '6px',
+          "& .MuiBottomNavigationAction-label": {
+            color: "black", // Default color for labels
+            fontSize: isSmallScreen ? "10px" : "14px",
+            marginTop: isSmallScreen ? "2px" : "6px",
+            "&.Mui-selected": {
+              color: "var(--red)", // Change label color to red when selected
+            },
+          },
+          "&.Mui-selected": {
+            color: "var(--red)", // Set selected color to red
+            "& .MuiSvgIcon-root": {
+              color: "var(--red)", // Set icon color to red when selected
+            },
           },
         },
       }}
     >
-      <BottomNavigationAction label="Home" icon={<Home />} LinkComponent={Handbook} />
-      <BottomNavigationAction label="Raadplegen" icon={<Place />} />
-      <BottomNavigationAction label="Kaarten" icon={<Map />} />
-      <BottomNavigationAction label="Projecten" icon={<FileCopy />} />
-      <BottomNavigationAction label="Accounts" icon={<Group />} />
-      <BottomNavigationAction label="Ondersteuning" icon={<Help />} />
+      <BottomNavigationAction
+        label="Handboek"
+        icon={<Book />}
+        value="handbook" // Set the value for the selected page
+      />
+      <BottomNavigationAction
+        label="Raadplegen"
+        icon={<Place />}
+        value="raadplegen"
+      />
+      <BottomNavigationAction label="Kaarten" icon={<Map />} value="kaarten" />
+      <BottomNavigationAction
+        label="Projecten"
+        icon={<FileCopy />}
+        value="projecten"
+      />
+      <BottomNavigationAction
+        label="Accounts"
+        icon={<Group />}
+        value="accounts"
+      />
+      <BottomNavigationAction
+        label="Ondersteuning"
+        icon={<Help />}
+        value="ondersteuning"
+      />
     </BottomNavigation>
   );
 };

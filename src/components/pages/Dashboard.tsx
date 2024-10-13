@@ -22,12 +22,18 @@ import "../../scss/Dashboard.scss";
 import BottomNavBar from "./BottomNavBar";
 import logo from "../../assets/dali-logo.png";
 import Handbook from "./Handbook/Handbook";
-import { MenuBook, AccountTree, NearMe, LocationOn, Subject } from "@mui/icons-material";
+import {
+  MenuBook,
+  AccountTree,
+  NearMe,
+  LocationOn,
+  Subject,
+} from "@mui/icons-material";
 
 const Dashboard: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(true);
-  const [selectedPage, setSelectedPage] = useState("");
+  const [selectedPage, setSelectedPage] = useState("handbook");
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -73,6 +79,25 @@ const Dashboard: React.FC = () => {
       ],
     },
   ];
+
+  const renderPageContent = () => {
+    switch (selectedPage) {
+      case "home":
+        return <Handbook />;
+      case "raadplegen":
+        return <div>Kaarten Content</div>;
+      case "kaarten":
+        return <div>Kaarten Content</div>;
+      case "projecten":
+        return <div>Projecten Content</div>;
+      case "accounts":
+        return <div>Accounts Content</div>;
+      case "ondersteuning":
+        return <div>Ondersteuning Content</div>;
+      default:
+        return <Handbook />;
+    }
+  };
 
   const handleSidebarItemClick = (page: string) => {
     setSelectedPage(page);
@@ -226,44 +251,47 @@ const Dashboard: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Sidebar
-        isExpanded={isSidebarExpanded}
-        toggleSidebar={toggleSidebar}
-        onItemClick={handleSidebarItemClick}
-        drawerWidth={
-          isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth
-        }
-        sidebarItems={sidebarItems}
-      />
+      <Box className="side-bar-content">
+        <Sidebar
+          isExpanded={isSidebarExpanded}
+          toggleSidebar={toggleSidebar}
+          onItemClick={handleSidebarItemClick}
+          drawerWidth={
+            isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth
+          }
+          sidebarItems={sidebarItems}
+        />
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          alignItems: "stretch",
-          minWidth: 0,
-          maxWidth: {
-            sm: `calc(100% - ${isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth}px)`,
-            xs: "100%",
-          },
-          ml: {
-            sm: `${isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth}px`,
-            xs: 0,
-          },
-          mt: `${appBarHeight}px`,
-          mb: `${bottomNavHeight}px`,
-          overflowX: "hidden",
-          overflowY: "hidden",
-          boxSizing: "border-box",
-        }}
-      >
-        {selectedPage === "chapters" && <Handbook />}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "stretch",
+            minWidth: 0,
+            maxWidth: {
+              sm: `calc(100% - ${isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth}px)`,
+              xs: "100%",
+            },
+            ml: {
+              sm: `${isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth}px`,
+              xs: 0,
+            },
+            mt: `${appBarHeight}px`,
+            mb: `${bottomNavHeight}px`,
+            overflowX: "hidden",
+            overflowY: "hidden",
+            boxSizing: "border-box",
+          }}
+        >
+          {selectedPage === "chapters" && <Handbook />}
+          <Box>{renderPageContent()}</Box>
+        </Box>
       </Box>
 
-      <BottomNavBar />
+      <BottomNavBar selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
     </Box>
   );
 };
