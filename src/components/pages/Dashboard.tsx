@@ -189,8 +189,12 @@ const Dashboard: React.FC = () => {
             >
               <InputBase
                 placeholder="Search…"
-                startAdornment={<SearchIcon sx={{ ml: 1 }} />}
-                sx={{ pl: 4, width: "100%", py: 0.5 }}
+                startAdornment={<SearchIcon />}
+                sx={{
+                  px: 1,
+                  width: "100%",
+                  py: 0.5,
+                }}
               />
             </Box>
           </Box>
@@ -291,7 +295,10 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
 
-      <BottomNavBar selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
+      <BottomNavBar
+        selectedPage={selectedPage}
+        setSelectedPage={setSelectedPage}
+      />
     </Box>
   );
 };
