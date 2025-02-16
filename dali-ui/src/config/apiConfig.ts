@@ -1,5 +1,5 @@
 // API URL Configuration
-export const API_URL = 'http://185.84.140.118:8080/api';
+export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 // Ensure API URL is set globally
 if (typeof window !== 'undefined') {
