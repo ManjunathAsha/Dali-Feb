@@ -6,7 +6,30 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["Dali.DocumentService.csproj", "./"]
-RUN dotnet restore "Dali.DocumentService.csproj"
+
+# Clear NuGet cache and configure for Linux
+RUN dotnet nuget locals all --clear
+ENV NUGET_PACKAGES=/root/.nuget/packages
+RUN mkdir -p /root/.nuget/packages
+
+# Add NuGet.Config to disable package analysis
+RUN echo '<?xml version="1.0" encoding="utf-8"?>\n\
+<configuration>\n\
+  <config>\n\
+    <add key="globalPackagesFolder" value="/root/.nuget/packages" />\n\
+  </config>\n\
+  <packageRestore>\n\
+    <add key="enabled" value="True" />\n\
+    <add key="automatic" value="True" />\n\
+  </packageRestore>\n\
+</configuration>' > /root/NuGet.Config
+
+ENV NUGET_CONFIG=/root/NuGet.Config
+
+# Restore with retry logic
+RUN dotnet restore "Dali.DocumentService.csproj" --disable-parallel || \
+    (sleep 5 && dotnet restore "Dali.DocumentService.csproj" --disable-parallel)
+
 COPY . .
 RUN dotnet build "Dali.DocumentService.csproj" -c Release -o /app/build
 
