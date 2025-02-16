@@ -1,0 +1,162 @@
+body {
+  overflow: hidden; /* Hide scrollbars */
+}
+#page { display: flex; overflow: hidden}
+body, h1 {margin: 0; padding: 0; }
+h2 {font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+  padding: 10px;
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 16px;
+  background: rgb(200,70,100);
+  margin: 0;
+  border: 0;
+}
+h3 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: border-box;
+  background: #aaa;
+  color: #fff;
+  border-bottom: 1px solid #d3d3d3;
+  letter-spacing: .3px;
+  cursor: pointer;
+  padding: 10px;
+  margin: 0;
+  border: 0;
+}
+h4 {
+  background: #ccc;
+  color: #444;
+  letter-spacing: .3px;
+  cursor: pointer;
+  font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+  padding: 10px;
+  margin: 0;
+  border: 0;
+  display: block;
+}
+h5 {
+  border-bottom: 1px solid #d3d3d3;
+  background: #e6e6e6;
+  font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+  padding: 10px;
+  cursor: pointer;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+body { font-family: sans-serif; padding: 0em; }
+
+.left-panel,
+.right-panel {
+  overflow: auto;
+  padding: 20px;
+}
+
+.left-panel {
+  width: 350px;
+  height: 100vh;
+  background-color: #5a5a5a;
+  color: white;
+  padding: 1em;
+  margin: 0px;
+}
+
+.right-panel { 
+  width: calc(100vw - 380px);
+  height: calc(100vh - 80px);
+}
+
+.lower-panel {
+  width: calc(100vw - 410px);
+  background-color: #fff;;
+  color: #fff;
+  padding: 1em;
+  margin: 0;
+  position: fixed;
+  bottom: 0;
+  right: 30px;
+  box-sizing: border-box;
+  overflow: auto;
+  
+  display: flex;
+  justify-content: center; /* Horizontally center the contents */
+  align-items: center; /* Vertically center the contents */
+}
+
+
+
+
+.ais-SearchBox { margin: 1em 0; }
+.ais-InstantSearWch { max-width: 960px; overflow: hidden; margin: 0 auto; }
+.ais-Hits-item { margin-bottom: 1em; margin-left: 20px; width: calc(100% - 420px); }
+.hit-name { margin-bottom: .5em; }
+.hit-description { color: #888; font-size: 14px; margin-bottom: .5em; }
+.search-panel { display: inline; }
+.searchbox { margin-bottom: 2rem; }
+.ais-InfiniteHits-list { display: none;}
+
+
+
+.header { display: flex; position: fixed; width: 100%; align-items: center; min-height: 50px; padding: 0 2rem; background-image: linear-gradient(to right, #c84664, #c84664);
+  color: #fff; margin-bottom: 1rem; }
+.marginTopRight {margin-top: 100px;}
+.chapter { font-size: 18px; background-color: #c84664; color: white; padding: 5px; margin: 0; display: inline-block; width: 100%}
+.level { font-size: 17px; background-color: #aaaaaa; color: white; padding: 5px; margin: 0; font-weight: normal; display: inline-block; width: 100%}
+.location { font-size: 16px; background-color: #cccccc; color: black; padding: 5px; margin: 0; font-weight: normal; display: inline-block; width: 100%}
+.subject { font-size: 16px; background-color: #e6e6e6; color: black; padding: 5px; margin: 0; font-weight: normal; display: inline-block; width: 100%}
+.requirement { font-size: 14px; padding: 5px; margin: 0px; }
+.ais-Pagination { margin-top: 1em; }
+.pagination { margin: 2rem auto; text-align: center; }
+
+/* Apply styles for printing */
+@media print {
+  body {
+    overflow: visible; /* Allow scrollbars for printing */
+  }
+
+  /* Hide unnecessary elements */
+  .left-panel, .lower-panel, .header, .marginTopRight, .chapter, .level, .location, .subject, .requirement, .pagination {
+    display: none;
+  }
+
+  /* Adjust styles for printing the right panel */
+  .right-panel {
+    width: 100%; /* Expand the width for printing */
+    height: auto; /* Adjust height as needed */
+    background-color: white; /* Set background color for printing */
+    color: black; /* Set text color for printing */
+    padding: 1em;
+    margin: 0;
+    box-sizing: content-box;
+    overflow: visible; /* Allow content to overflow for printing */
+    position: static; /* Reset the position */
+  }
+
+  h2 {
+    color: yellow; /* Set background color for printing */
+  }
+  /* Start each h2 on a new page */
+  h2 {
+    page-break-before: always;
+  }
+  h2, h3, h4, h5 {
+    page-break-after: avoid;
+  }
+
+  /* Additional styles for printing */
+  @page {
+    size: auto; /* Adjust page size as needed */
+    margin: 10;
+  }
+}

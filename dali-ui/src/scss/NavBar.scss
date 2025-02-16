@@ -1,0 +1,29 @@
+.navbar {
+  background-color: #673ab7; // Purple background
+  color: white;
+
+  &__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px; // Add padding to both sides for proper spacing
+  }
+
+  &__left,
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 16px; // Spacing between icons
+  }
+
+  &__title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    flex-grow: 1;
+  }
+
+  &__icon {
+    color: white;
+  }
+}

@@ -1,0 +1,31 @@
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px; /* Same as AppBar */
+    padding: 0 10px;
+    background-color: #333333;
+  }
+  
+  .sidebar-logo {
+    height: 100%;
+    max-height: 40px;
+  }
+  
+  .accordion-summary {
+    background-color: #C2185B;
+    color: white;
+  }
+  
+  .accordion-details {
+    background-color: #555555;
+  }
+  
+  .list-item-text {
+    color: white;
+  }
+  
+  .checkbox {
+    color: white;
+  }
+  
