@@ -87,21 +87,25 @@ services:
       timeout: 10s
       retries: 3
 
-  ui:
-    container_name: dali-ui
+  dali-ui:
     build:
       context: ./dali-ui
-      dockerfile: ./Dockerfile
       args:
         - REACT_APP_API_URL=http://185.84.140.118:8080/api
-    ports:
-      - "3000:80"
     environment:
       - REACT_APP_API_URL=http://185.84.140.118:8080/api
-    networks:
-      - dali-network
+      - NODE_ENV=production
+    ports:
+      - "3000:80"
     depends_on:
       - gateway
+    networks:
+      - dali-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   dali-network:
