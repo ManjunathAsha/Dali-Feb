@@ -76,7 +76,7 @@ function PointDetail({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDownload = (filePath: string, fileName: string) => {
-    const baseUrl = `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/DocumentDetails/download`;
+    const baseUrl = `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/DocumentDetails/download`;
     const downloadUrl = `${baseUrl}/${filePath}`;
     
     const link = document.createElement("a");
@@ -96,7 +96,7 @@ function PointDetail({
         // Only fetch file details if files are present
         if (files?.isPresent) {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/DocumentDetails/files/${id}`
+            `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/DocumentDetails/files/${id}`
           );
           setFileDetails(response.data);
         } else {
@@ -106,7 +106,7 @@ function PointDetail({
         // Only fetch link details if links are present
         if (links?.isPresent) {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/DocumentDetails/links/${id}`
+            `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/DocumentDetails/links/${id}`
           );
           setLinkDetails(response.data);
         } else {

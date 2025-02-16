@@ -3,7 +3,6 @@ export const ARIA_LABELS = {
     MAIN: 'Main navigation',
     SIDEBAR: 'Sidebar navigation',
     SKIP_LINK: 'Skip to main content',
-    SKIP_TO_MAIN: 'Skip to main content',
     DRAWER: 'Side drawer',
     MENU: 'Menu',
     BREADCRUMB: 'Breadcrumb navigation',

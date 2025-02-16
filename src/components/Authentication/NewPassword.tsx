@@ -85,7 +85,7 @@ const NewPassword: React.FC = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/reset-password`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
