@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+**/node_modules/
+**/packages/
+
+# Docker
+**/Dockerfile
+.dockerignore
+
+# Misc
+*.DS_Store
