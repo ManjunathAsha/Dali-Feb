@@ -10,25 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 
-interface DataRow {
-  hoofdstuk: string;
-  eigenaar: string;
+interface SectionInfoProps {
+  sections?: any[];
 }
-
-const data: DataRow[] = [
-  { hoofdstuk: "01. Planproces", eigenaar: "Saanvi Owner" },
-  { hoofdstuk: "02. Groenvoorzieningen", eigenaar: "Marco Heshof" },
-  { hoofdstuk: "03. Speelvoorzieningen", eigenaar: "Marieke Rodenbach" },
-  { hoofdstuk: "04. Weginfrastructuur", eigenaar: "Johan Benning" },
-  { hoofdstuk: "05. Civiele kunstwerken", eigenaar: "Marc Biesaart" },
-  { hoofdstuk: "06. Riolering - algemeen", eigenaar: "Gerrit Hofland" },
-  { hoofdstuk: "07. Riolering - vrij verval", eigenaar: "Gerrit Hofland" },
-  { hoofdstuk: "08. Riolering - minigemalen", eigenaar: "Gerrit Hofland" },
-  {
-    hoofdstuk: "09. Riolering - rioolgemalen en persleidingen",
-    eigenaar: "Gerrit Hofland",
-  },
-];
 
 const StyledTable = styled(Table)({
   borderCollapse: "collapse",
@@ -50,7 +34,7 @@ const StyledTableHeaderCell = styled(StyledTableCell)({
   fontWeight: "bold",
 });
 
-function Chapter() {
+const SectionInfo: React.FC<SectionInfoProps> = ({ sections = [] }) => {
   return (
     <Box sx={{ overflowY: "scroll" }}>
       <Typography
@@ -70,9 +54,9 @@ function Chapter() {
           fontWeight: "bold",
         }}
       >
-        Hoofdstukken
+        Hoofdstukken ({sections.length})
       </Typography>
-      <TableContainer sx={{background: "var(--fade)",}}>
+      <TableContainer sx={{ background: "var(--fade)" }}>
         <StyledTable aria-label="borderless table">
           <TableHead>
             <TableRow>
@@ -81,10 +65,14 @@ function Chapter() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row, index) => (
+            {sections.map((sectionItem, index) => (
               <TableRow key={index}>
-                <StyledTableBodyCell>{row.hoofdstuk}</StyledTableBodyCell>
-                <StyledTableBodyCell>{row.eigenaar}</StyledTableBodyCell>
+                <StyledTableBodyCell>
+                  {sectionItem.section}
+                </StyledTableBodyCell>
+                <StyledTableBodyCell>
+                  {sectionItem.ownerName }
+                </StyledTableBodyCell>
               </TableRow>
             ))}
           </TableBody>
@@ -92,6 +80,6 @@ function Chapter() {
       </TableContainer>
     </Box>
   );
-}
+};
 
-export default Chapter;
+export default SectionInfo;

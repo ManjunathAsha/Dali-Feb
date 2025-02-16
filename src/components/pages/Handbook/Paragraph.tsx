@@ -10,7 +10,28 @@ import EditHandbook from "./action/edit/Edit";
 import Share from "./action/Publish";
 import PrimaryButton from "../../utils/PrimaryButton";
 
-function Paragraph({ selectedPoint }: { selectedPoint: string }) {
+
+interface ParagraphProps {
+  selectedPoint: string;
+  ownerName?: string;
+  id: string; 
+  hardness: string; 
+  files: any; 
+  links: any; 
+  onViewFile: (fileUrl: string) => void;
+  onViewLink: (linkUrl: string) => void;
+
+}
+function Paragraph({ 
+  selectedPoint, 
+  ownerName = "Unknown Owner" ,
+  id,
+  hardness,
+  files,
+  links,
+  onViewFile,
+  onViewLink,
+}: ParagraphProps) {
   const [submitRequest, setSubmitRequest] = useState(false);
   const [isEdit, setEdit] = useState(false);
   const [isDelete, setDelete] = useState(false);
@@ -88,12 +109,23 @@ function Paragraph({ selectedPoint }: { selectedPoint: string }) {
       </Box>
 
       {/* Main Content */}
-      <PointDetail selectedPoint={selectedPoint} />
+      <PointDetail selectedPoint={selectedPoint} ownerName={ownerName} id={id}
+        hardness={hardness}
+        files={files}
+        links={links} 
+        onViewFile={onViewFile}
+        />
 
       <Submit
         submitRequest={submitRequest}
         setSubmitRequest={handleRequest}
         selectedPoint={selectedPoint}
+        id={id}
+        hardness={hardness}
+        files={files}
+        links={links}
+        onViewFile={onViewFile}
+        onViewLink={onViewLink}
       />
 
       <EditHandbook isEdit={isEdit} setEdit={setEdit} />

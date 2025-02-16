@@ -1,170 +1,248 @@
-import React, { useEffect, useRef, useState, ChangeEvent, FormEvent } from 'react';
-import { Box, Button, Container, FormControl, InputAdornment, InputLabel, Link, Paper, TextField, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { Container, Paper, Typography, TextField, Button, Box, InputAdornment, Link, FormControl, InputLabel } from '@mui/material';
 import { AccountCircle, Https } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/AuthContext';
+import logo from '../../assets/dali-logo.png';
+import '../../scss/Login.scss';
 import ForgotPassword from './ForgotPassword';
-import '../../scss/Login.scss'; // Import the SCSS file
-import logo from '../../assets/dali-logo-small.png'
-// Define types for form data and form errors
+import api from '../../api/axiosConfig';
+
+interface LoginRequestDto {
+  email: string;
+  password: string;
+}
+
+interface AuthResponseDto {
+  success: boolean;
+  message: string;
+  token?: string;
+  refreshToken?: string;
+  expiresAt?: Date;
+  roles?: string[];
+  tenantId?: string;
+  tenantName?: string;
+  userName?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  errors?: string[];
+}
+
 interface FormData {
-  username: string;
+  email: string;
   password: string;
 }
 
 interface FormErrors {
-  username: boolean;
+  email: boolean;
   password: boolean;
+  general?: string;
 }
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useUser();
 
-  const handleLogin = () => {
-    navigate('/dashboard');
-  };
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
+  const [formErrors, setFormErrors] = useState<FormErrors>({ email: false, password: false });
 
-  const [formData, setFormData] = useState<FormData>({
-    username: '',
-    password: '',
-  });
-
-  const [formErrors, setFormErrors] = useState<FormErrors>({
-    username: false,
-    password: false,
-  });
-
-  const usernameRef = useRef<HTMLInputElement | null>(null);
-
-  const [open, setOpen] = useState<boolean>(false);
+  const emailRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (usernameRef.current) {
-      usernameRef.current.focus();
+    if (emailRef.current) {
+      emailRef.current.focus();
     }
   }, []);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setFormErrors((prevErrors) => ({ ...prevErrors, [name]: false }));
+    setFormData((prevData: FormData) => ({ ...prevData, [name]: value }));
+    setFormErrors((prevErrors: FormErrors) => ({ ...prevErrors, [name]: false, general: undefined }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const validateForm = () => {
     const errors = {
-      username: formData.username === '',
-      password: formData.password === '',
+      email: formData.email === '',
+      password: formData.password === ''
     };
 
     setFormErrors(errors);
+    return !Object.values(errors).some(error => error);
+  };
 
-    const hasErrors = Object.values(errors).some((error) => error);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    if (!hasErrors) {
-      console.log('Logging in with:', formData);
-      handleLogin();
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const loginRequest: LoginRequestDto = {
+        email: formData.email,
+        password: formData.password
+      };
+
+      const response = await api.post<AuthResponseDto>('/Auth/login', loginRequest);
+
+      if (response.data && response.data.success) {
+        localStorage.setItem('refreshToken', response.data.refreshToken!);
+        login(response.data.token!);
+        navigate('/dashboard');
+      } else {
+        throw new Error(response.data.message || 'Login failed');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      let errorMessage = 'Login failed';
+      
+      if (error.response?.data) {
+        errorMessage = error.response.data.message || error.response.data || errorMessage;
+      } else if (error.request) {
+        errorMessage = 'No response from server';
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+
+      setFormErrors((prev: FormErrors) => ({
+        ...prev,
+        general: errorMessage
+      }));
     }
   };
 
-  return (
-    <Container className="dali-login-container" >
-      <Paper className="dali-login-paper" elevation={6}>
-        <img
-          src={logo}
-          alt="DALI Logo"
-          className="dali-login-logo"
-        />
-        <Typography variant="h6">
-        DALI LIOR - Aanmelden
-        </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
-          COURSE Municipality of Zoeterwoude
-        </Typography>
+  const [open, setOpen] = useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <FormControl fullWidth>
-            <InputLabel shrink htmlFor="username" sx={{ fontSize: "18px", fontWeight: "bold", ml: "-12px" }}>
-              Username
-            </InputLabel>
-            <TextField
-              id="username"
-              name="username"
-              variant="outlined"
-              placeholder="username"
-              value={formData.username}
-              onChange={handleChange}
-              error={formErrors.username}
-              helperText={formErrors.username ? "Username is required" : ""}
-              inputRef={usernameRef}
-              margin="normal"
-              size="small"
-              className="dali-login-input"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle  />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 1 }}
-            />
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel shrink htmlFor="password" sx={{ fontSize: "18px", fontWeight: "bold", ml: "-12px" }}>
-              Password
-            </InputLabel>
-            <TextField
-              id="password"
-              name="password"
-              type="password"
-              variant="outlined"
-              placeholder="password"
-              value={formData.password}
-              onChange={handleChange}
-              error={formErrors.password}
-              helperText={formErrors.password ? "Password is required" : ""}
-              margin="normal"
-              size="small"
-              className="dali-login-input"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Https />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ marginBottom: "20px" }}
-            />
-          </FormControl>
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            className="dali-login-button"
-         
-          >
-            To register
-          </Button>
+  return (
+    <div className="dali-login">
+      <div className="dali-login-container">
+        <Paper elevation={6} className="dali-login-paper">
+          <img src={logo} alt="DALI Logo" className="dali-login-logo" />
           
-            <Box className="dali-login-forgotPassword" >
-              <Link href="#" variant="body2" onClick={handleOpen}>
+          <Typography variant="h5" sx={{
+            fontWeight: 600,
+            textAlign: 'center',
+            fontSize: { xs: '1.25rem', sm: '1.5rem' }
+          }}>
+            DALI LIOR - Login
+          </Typography>
+
+          <Typography variant="body1" color="text.secondary" sx={{
+            textAlign: 'center',
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' }
+          }}>
+            COURSE Municipality of Zoeterwoude
+          </Typography>
+
+          <Box component="form" onSubmit={handleSubmit} className="dali-login-form">
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Typography component="label" htmlFor="email" sx={{ 
+                fontSize: { xs: '14px', sm: '16px' },
+                fontWeight: 500,
+                color: 'text.secondary',
+                mb: 1,
+                display: 'block'
+              }}>
+                Email Address
+              </Typography>
+              <TextField
+                id="email"
+                name="email"
+                type="email"
+                variant="outlined"
+                placeholder="Enter your email address"
+                value={formData.email}
+                onChange={handleChange}
+                error={formErrors.email}
+                helperText={formErrors.email ? 'Email is required' : ''}
+                inputRef={emailRef}
+                fullWidth
+                size="small"
+                className="dali-login-input"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </FormControl>
+
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Typography component="label" htmlFor="password" sx={{ 
+                fontSize: { xs: '14px', sm: '16px' },
+                fontWeight: 500,
+                color: 'text.secondary',
+                mb: 1,
+                display: 'block'
+              }}>
+                Password
+              </Typography>
+              <TextField
+                id="password"
+                name="password"
+                type="password"
+                variant="outlined"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                error={formErrors.password}
+                helperText={formErrors.password ? 'Password is required' : ''}
+                fullWidth
+                size="small"
+                className="dali-login-input"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Https />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </FormControl>
+
+            {formErrors.general && (
+              <Typography color="error" variant="body2" align="center" sx={{ mb: 2 }}>
+                {formErrors.general}
+              </Typography>
+            )}
+
+            <Button 
+              fullWidth 
+              type="submit" 
+              variant="contained"
+              className="dali-login-button"
+            >
+              Login
+            </Button>
+
+            <div className="dali-login-links">
+              <Link 
+                href="#" 
+                variant="body2" 
+                onClick={handleOpen}
+                className="dali-login-link"
+              >
                 Forgot Password?
               </Link>
-            </Box>
-            <Box className="dali-login-helpdesk">
-              <Link href="mailto:helpdesk@example.com" variant="body2">
+              <Link 
+                href="mailto:helpdesk@example.com" 
+                variant="body2"
+                className="dali-login-link"
+              >
                 Mail to DALI Helpdesk
               </Link>
-            </Box>
-        
-        </Box>
-      </Paper>
+            </div>
+          </Box>
+        </Paper>
+      </div>
       <ForgotPassword open={open} handleClose={handleClose} />
-    </Container>
+    </div>
   );
 };
 

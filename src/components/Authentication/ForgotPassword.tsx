@@ -1,142 +1,229 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Button,
-  Divider,
-  FormControl,
-  InputAdornment,
-  InputLabel,
   Modal,
-  TextField,
+  FormControl,
   Typography,
-} from "@mui/material";
-import EmailIcon from "@mui/icons-material/Email";
-import '../../scss/Login.scss';
+  Divider,
+  Snackbar,
+  Alert,
+} from '@mui/material';
+import EmailIcon from '@mui/icons-material/Email';
+import { ARIA_LABELS, MESSAGES, VALIDATION } from '../../constants';
+import { AccessibleTextField } from '../common/AccessibleTextField';
+import { AccessibleButton } from '../common/AccessibleButton';
+import { useA11y } from '../../hooks/useA11y';
+import { styled } from '@mui/material/styles';
 
 interface ForgotPasswordProps {
   open: boolean;
   handleClose: () => void;
 }
 
-const ForgotPassword: React.FC<ForgotPasswordProps> = ({
+const ModalBox = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '95%',
+  maxWidth: 500,
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[5],
+  padding: 0,
+  outline: 'none',
+}));
+
+const ModalHeader = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.grey[100],
+  borderTopLeftRadius: theme.shape.borderRadius,
+  borderTopRightRadius: theme.shape.borderRadius,
+}));
+
+const ModalContent = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(3),
+}));
+
+const ModalActions = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: theme.spacing(2),
+}));
+
+export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
   open,
   handleClose,
 }) => {
-  const [email, setEmail] = useState<string>("");
-  const [error, setError] = useState<boolean>(false);
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const { announceToScreenReader } = useA11y();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    setError(false);
-  };
+  useEffect(() => {
+    if (open) {
+      setEmail('');
+      setError('');
+      setIsSubmitting(false);
+      setShowSuccessMessage(false);
+    }
+  }, [open]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const error = email === "";
-    setError(error);
-    if (!error) {
-      console.log("Email:", email);
+    
+    if (!validateEmail()) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      const clientUrl = process.env.REACT_APP_CLIENT_URL || 'http://localhost';
+      const resetUrl = `${clientUrl}/reset-password?email=${encodeURIComponent(email)}&token=`;
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          resetUrl,
+          clientUrl,
+          protocol: 'http'
+        })
+      });
+
+      if (response.ok) {
+        announceToScreenReader('A password reset link has been sent to your email address. Please check your inbox and follow the instructions.');
+        setSuccessMessage(`Password reset instructions have been sent to ${email}. Please check your inbox and spam folder.`);
+        setShowSuccessMessage(true);
+        handleClose();
+      } else {
+        const errorData = await response.json();
+        console.error('Server response:', errorData);
+        throw new Error(errorData.message || 'Failed to send reset email');
+      }
+    } catch (error: any) {
+      console.error('Password reset error:', error);
+      setError(error.message || 'Failed to send reset email');
+      announceToScreenReader(error.message || 'Failed to send reset email');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleCancel = () => {
-    handleClose();
-    setEmail("");
-    setError(false);
+  const validateEmail = () => {
+    if (!email) {
+      setError(VALIDATION.EMAIL.REQUIRED);
+      return false;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError(VALIDATION.EMAIL.INVALID);
+      return false;
+    }
+
+    return true;
   };
 
   return (
-    <Modal
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="modal-modal-title"
-    aria-describedby="modal-modal-description"
-  >
-    <Box className="dali-forgotpassword-modalBox">
-      <Typography
-        id="modal-modal-title"
-        variant="h6"
-        component="h2"
-        sx={{
-          p: "1px 1px 1px 10px",
-          border: "0.5px solid var(--lightgray)",
-          background: "var(--fade)",
-        }}
+    <>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="forgot-password-title"
+        aria-describedby="forgot-password-description"
       >
-        Request new password
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
-        <Typography id="modal-modal-description">
-          Enter your account email address below. You will receive an email
-          with a new password within a few minutes.
-        </Typography>
-        <Divider sx={{ mt: 1 }} />
-        <FormControl fullWidth sx={{ mt: 3 }}>
-          <InputLabel
-            shrink
-            htmlFor="email"
-            sx={{ fontSize: "18px", fontWeight: "bold", ml: "-12px" }}
-          >
-            Email
-          </InputLabel>
-          <TextField
-            id="email"
-            name="email"
-            type="email"
-            variant="outlined"
-            placeholder="email"
-            value={email}
-            onChange={handleChange}
-            error={error}
-            helperText={error ? "Email is required" : ""}
-            margin="normal"
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ marginBottom: "20px" }}
-          />
-        </FormControl>
-        <Box className= "dali-forgotpassword-modalButtonContainer">
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            className="dali-login-button"
-            sx={{
-              backgroundColor: "#E53935",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "grey",
-              },
-            }}
-          >
-            To Request
-          </Button>
-          <Button
-            fullWidth
-            type="button" // Changed to 'button' because this is not submitting the form
-            variant="contained"
-             className="dali-login-button"
-            onClick={handleCancel}
-            sx={{
-              backgroundColor: "#E53935",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "grey",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        </Box>
-      </Box>
-    </Box>
-  </Modal>
+        <ModalBox>
+          <ModalHeader>
+            <Typography
+              id="forgot-password-title"
+              variant="h6"
+              component="h2"
+            >
+              Request New Password
+            </Typography>
+          </ModalHeader>
+
+          <ModalContent>
+            <Typography
+              id="forgot-password-description"
+              variant="body1"
+              gutterBottom
+            >
+              Enter your account email address below. You will receive an email
+              with a new password within a few minutes.
+            </Typography>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <FormControl fullWidth error={!!error}>
+                <AccessibleTextField
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="Email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError('');
+                  }}
+                  error={!!error}
+                  helperText={error}
+                  icon={EmailIcon}
+                  required
+                  autoComplete="email"
+                  aria-label={ARIA_LABELS.FORMS.EMAIL}
+                  autoFocus
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+
+              <ModalActions>
+                <AccessibleButton
+                  onClick={handleClose}
+                  disabled={isSubmitting}
+                  variant="outlined"
+                  color="primary"
+                >
+                  Cancel
+                </AccessibleButton>
+                <AccessibleButton
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  loading={isSubmitting}
+                >
+                  Request Password
+                </AccessibleButton>
+              </ModalActions>
+            </Box>
+          </ModalContent>
+        </ModalBox>
+      </Modal>
+      
+      <Snackbar 
+        open={showSuccessMessage} 
+        autoHideDuration={6000} 
+        onClose={() => setShowSuccessMessage(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setShowSuccessMessage(false)} 
+          severity="success" 
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

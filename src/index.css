@@ -1,11 +1,14 @@
 :root {
-  --white: #fefefeff;
+  --white: #fff;
   --lightgray: rgb(227, 226, 226);
   --darkgray: #5a5a5a;
+  --darkgray1:#a9a9a9;
   --fade: rgb(246, 246, 246);
+  --lightgray1:#d3d3d3;
   --gray: #b7b7b7;
   --black: #3f3c3c;
   --red: #cc4464;
+  --lightred:#ff85a1;
 }
 
 html,
@@ -19,40 +22,70 @@ body,
   font-family: "Helvetica";
 }
 
-/* Style for the scrollbar */
+/* General Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 8px; /* Set the width of the vertical scrollbar */
+  height: 6px; /* Set the height of the horizontal scrollbar */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+  background: #f1f1f1; /* Light gray for the track */
+  border-radius: 10px; /* Rounded track */
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 20px;
-  background: rgb(184, 184, 184);
-  background: linear-gradient(
-    90deg,
-    rgba(184, 184, 184, 1) 13%,
-    rgba(237, 237, 237, 1) 40%,
-    rgba(236, 236, 236, 1) 63%,
-    rgba(184, 184, 184, 1) 100%
-  );
-  border-top: 3px solid #bebebe;
-  border-bottom: 2px solid #bebebe;
+  background: rgba(150, 150, 150, 0.7); /* Subtle gray for the thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+  min-height: 20px; /* Ensure the thumb is not too short */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(184, 184, 184);
-  background: linear-gradient(
-    90deg,
-    rgb(113, 113, 113) 13%,
-    rgba(237, 237, 237, 1) 40%,
-    rgba(236, 236, 236, 1) 63%,
-    rgba(184, 184, 184, 1) 100%
-  );
+  background: rgba(120, 120, 120, 0.9); /* Darker gray on hover */
+}
+
+/* Optional: Reduce the height of scrollbar buttons (arrows) */
+::-webkit-scrollbar-button {
+  height: 10px; /* Make the arrow buttons smaller */
+  background: transparent; /* Transparent or styled */
+}
+
+/* Scrollbar Buttons Styling */
+::-webkit-scrollbar-button:increment {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><path fill="%23000000" d="M2 3l3 3 3-3H2z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+::-webkit-scrollbar-button:decrement {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><path fill="%23000000" d="M2 7l3-3 3 3H2z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Optional: Touch devices adjustments */
+@media (hover: none) {
+  ::-webkit-scrollbar {
+    width: 4px; /* Narrower scrollbar for touch devices */
+    height: 4px; /* Shorter scrollbar for horizontal */
+  }
+  ::-webkit-scrollbar-thumb {
+    min-height: 10px; /* Smaller thumb for touch screens */
+  }
+}
+
+
+/* Add to your existing CSS if needed */
+@supports (overflow: overlay) {
+  .scroll-container {
+    overflow: overlay;
+  }
+}
+
+/* For touch devices */
+@media (hover: none) {
+  ::-webkit-scrollbar {
+    width: 6px; /* Smaller scrollbar for touch devices */
+  }
 }
 
 /* React Quill Styles */
@@ -66,3 +99,25 @@ body,
   background-color: #ffffff;
 }
 
+
+
+/* Accessibility-focused global styles */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

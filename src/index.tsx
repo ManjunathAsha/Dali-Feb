@@ -6,16 +6,48 @@ import reportWebVitals from './reportWebVitals';
 import { LanguageProvider } from './context/LanguageContext';
 import commonTranslations from './common/languages/nl'; // Import your translations
 
+// Add error logging
+console.log('Environment:', process.env);
+console.log('API URL:', process.env.REACT_APP_API_URL);
+
+class ErrorBoundary extends React.Component<any, { hasError: boolean, error: any }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('React Error Boundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', color: 'red' }}>
+          <h1>Something went wrong.</h1>
+          <pre>{this.state.error?.toString()}</pre>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-   <LanguageProvider appTranslations={commonTranslations}>
-      <App/>
+    <ErrorBoundary>
+      <LanguageProvider appTranslations={commonTranslations}>
+        <App/>
       </LanguageProvider>
-  
+    </ErrorBoundary>
   </React.StrictMode>
 );
 

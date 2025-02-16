@@ -82,12 +82,25 @@ interface SubmitProps {
   submitRequest: boolean;
   setSubmitRequest: () => void;
   selectedPoint: any;
+  id: string; 
+  hardness: string; 
+  files: any; 
+  links: any; 
+  onViewFile: (fileUrl: string) => void;
+  onViewLink: (linkUrl: string) => void;
+
 }
 
 const Submit: React.FC<SubmitProps> = ({
   submitRequest,
   setSubmitRequest,
   selectedPoint,
+  id,
+  hardness,
+  files,
+  links,
+  onViewFile,
+  onViewLink,
 }) => {
   const [value, setValue] = useState(0);
   const [editorContent, setEditorContent] = useState("");
@@ -182,7 +195,14 @@ const Submit: React.FC<SubmitProps> = ({
 
             {/* Tab Panels */}
             <TabPanel value={value} index={0}>
-              <PointDetail selectedPoint={selectedPoint} />
+              <PointDetail 
+              selectedPoint={selectedPoint}  
+              id={id}
+        hardness={hardness}
+        files={files}
+        links={links} 
+        onViewFile={onViewFile}
+      />
             </TabPanel>
             <TabPanel value={value} index={1}>
               Content for Bijlagen (Attachments)

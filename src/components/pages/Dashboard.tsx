@@ -1,304 +1,263 @@
-import React, { useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  InputBase,
-  Avatar,
-  Box,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import {
-  Search as SearchIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
-  ChevronRight,
-  ChevronLeft,
-} from "@mui/icons-material";
-import Sidebar from "./Sidebar";
-import "../../scss/Dashboard.scss";
-import BottomNavBar from "./BottomNavBar";
-import logo from "../../assets/dali-logo.png";
-import Handbook from "./Handbook/Handbook";
-import {
-  MenuBook,
-  AccountTree,
-  NearMe,
-  LocationOn,
-  Subject,
-} from "@mui/icons-material";
+import React ,{useState}from 'react';
+import { Box, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { 
+  faBook, 
+  faMapMarkerAlt, 
+  faMap, 
+  faFolder, 
+  faUsers, 
+  faQuestionCircle 
+} from '@fortawesome/free-solid-svg-icons';
+
+import CustomAppBar from './Layout/CustomAppBar';
+import DashboardTile from './DashboardTile';
+import { COLORS } from '../../constants/colors';
+import { useA11y } from '../../hooks/useA11y';
+import { ROUTES } from '../../constants/index';
+import { useLoading } from '../../context/LoadingContext';
+import { ARIA_LABELS } from '../../constants/aria';
+import { ShowLoadingParams } from '../../context/LoadingContext';
+import { useSidebar } from '../../context/SidebarContext';
+import { useUser } from '../../context/AuthContext';
+import { MapModal } from './ExtenalMap/MapModal';
+
+type Role = 'Admin' | 'Owner' | 'Reader' | 'Publisher' | 'SystemAdmin';
+
+interface DashboardCardProps {
+  id: string;
+  title: string;
+  content: string;
+  icon: any;
+  requiredRoles: Role[];
+  backgroundColor: string;
+  hoverColor: string;
+}
+
+const loadingConfigs: Record<string, ShowLoadingParams> = {
+  'handbook': {
+    messageKey: 'EISENVERWERKEN',
+    backgroundColor: 'RED',
+    textColor: 'WHITE',
+    spinnerType: 'DOUBLE_BLOCKS'
+  },
+  'consultViaMap': {
+    messageKey: 'EISENVERWERKEN',
+    backgroundColor: 'BLUE',
+    textColor: 'WHITE',
+    spinnerType: 'SIGNAL'
+  },
+  'externalMaps': {
+    messageKey: 'DEFAULT',
+    backgroundColor: 'BLUE',
+    textColor: 'WHITE',
+    spinnerType: 'BASIC'
+  },
+  'projects': {
+    messageKey: 'DEFAULT',
+    backgroundColor: 'PURPLE',
+    textColor: 'WHITE',
+    spinnerType: 'BOUNCY'
+  },
+  'accountsRights': {
+    messageKey: 'DEFAULT',
+    backgroundColor: 'GREEN',
+    textColor: 'WHITE',
+    spinnerType: 'RECT'
+  },
+  'support': {
+    messageKey: 'DEFAULT',
+    backgroundColor: 'GREEN',
+    textColor: 'WHITE',
+    spinnerType: 'BASIC'
+  }
+};
+
+const dashboardCards: DashboardCardProps[] = [
+  {
+    id: 'handbook',
+    title: 'Handbook',
+    content: 'Guidelines for Public Space Design (LIOR)',
+    icon: faBook,
+    requiredRoles: ['Owner', 'Reader', 'Publisher'],
+    backgroundColor: COLORS.dashboard.red,
+    hoverColor: COLORS.dashboard.redHover,
+  },
+  {
+    id: 'consultViaMap',
+    title: 'Consult via map',
+    content: 'Consulting the manual via map view',
+    icon: faMapMarkerAlt,
+    requiredRoles: ['Owner', 'Reader', 'Publisher'],
+    backgroundColor: COLORS.dashboard.desert,
+    hoverColor: COLORS.dashboard.desertHover,
+  },
+  {
+    id: 'externalMaps',
+    title: 'External maps',
+    content: 'Consulting online maps',
+    icon: faMap,
+    requiredRoles: ['Owner', 'Reader', 'Publisher'],
+    backgroundColor: COLORS.dashboard.blue,
+    hoverColor: COLORS.dashboard.blueHover,
+  },
+  {
+    id: 'projects',
+    title: 'Projects',
+    content: 'Project Specific Program of Requirements',
+    icon: faFolder,
+    requiredRoles: ['Owner', 'Reader', 'Publisher'],
+    backgroundColor: COLORS.dashboard.purple,
+    hoverColor: COLORS.dashboard.purpleHover,
+  },
+  {
+    id: 'accountsRights',
+    title: 'Accounts and Rights',
+    content: 'User Administration',
+    icon: faUsers,
+    requiredRoles: ['Admin', 'SystemAdmin'],
+    backgroundColor: COLORS.dashboard.meangreen,
+    hoverColor: COLORS.dashboard.meangreenHover,
+  },
+  {
+    id: 'support',
+    title: 'Support',
+    content: 'How can we help?',
+    icon: faQuestionCircle,
+    requiredRoles: ['Owner', 'Reader', 'Publisher', 'Admin', 'SystemAdmin'],
+    backgroundColor: COLORS.dashboard.green,
+    hoverColor: COLORS.dashboard.greenHover,
+  },
+];
 
 const Dashboard: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState<number>(0);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(true);
-  const [selectedPage, setSelectedPage] = useState("handbook");
+  const navigate = useNavigate();
+  const { announceToScreenReader } = useA11y();
+  const { showLoading, hideLoading } = useLoading();
+  const { dispatch } = useSidebar();
+  const { userInfo } = useUser();
+  const userRole = userInfo?.role?.toLowerCase() || '';
+  const [isMapModalOpen, setMapModalOpen] = useState(false);
 
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const hasRequiredRole = (requiredRoles: Role[]) => {
+    const normalizedUserRole = userRole.toLowerCase();
+    return requiredRoles.some(role => role.toLowerCase() === normalizedUserRole);
+  };
 
-  const expandedDrawerWidth = 300;
-  const collapsedDrawerWidth = 80;
-  const appBarHeight = 64;
-  const bottomNavHeight = 60;
+  const handleDashboardCardClick = async (cardId: string, cardTitle: string) => {
+    if (cardId === 'externalMaps') {
+      setMapModalOpen(true); // Open modal for "External Maps"
+      dispatch({ type: 'SET_ACTIVE_SECTION', section: 'externalMaps', role: userRole });
 
-  const sidebarItems = [
-    {
-      title: "Chapter",
-      icon: <MenuBook />,
-      page: "chapters",
-      subItems: [
-        "01. Planproces",
-        "02. Groenvoorzieningen",
-        "03. Speelvoorzieningen",
-        "04. Weginfrastructuur",
-      ],
-    },
-    {
-      title: "Niveau",
-      icon: <AccountTree />,
-      page: "niveau",
-    },
-    { title: "Woonkern", icon: <NearMe />, page: "woonkern" },
-    { title: "Gebied", icon: <LocationOn />, page: "gebied" },
-    {
-      title: "Onderwerp",
-      icon: <Subject />,
-      page: "onderwerp",
-      subItems: [
-        "Aanleg groenvoorzieningen",
-        "Aansluitingen particulier perceel op openbare ruimte",
-        "Aanvullingen",
-        "Beleid",
-        "Beschoeiing",
-        "Betonnen bruggen",
-        "Bodemverontreiniging",
-        "Boombescherming",
-        "Borden",
-      ],
-    },
-  ];
+      return;
+    }
+    try {
+      const config = loadingConfigs[cardId] || {
+        messageKey: 'DEFAULT',
+        backgroundColor: 'BLUE',
+        textColor: 'WHITE',
+        spinnerType: 'BASIC'
+      };
 
-  const renderPageContent = () => {
-    switch (selectedPage) {
-      case "home":
-        return <Handbook />;
-      case "raadplegen":
-        return <div>Kaarten Content</div>;
-      case "kaarten":
-        return <div>Kaarten Content</div>;
-      case "projecten":
-        return <div>Projecten Content</div>;
-      case "accounts":
-        return <div>Accounts Content</div>;
-      case "ondersteuning":
-        return <div>Ondersteuning Content</div>;
-      default:
-        return <Handbook />;
+      // Announce to screen reader
+      announceToScreenReader(
+        `${ARIA_LABELS.STATUS.LOADING} ${cardTitle}`
+      );
+
+      showLoading(config);
+      dispatch({ type: 'RESET_CHECKED_ITEMS' });
+
+      dispatch({ type: 'SET_ACTIVE_SECTION', section: cardId, role: userRole });
+      console.log('SET_ACTIVE_SECTION dispatched:', { section: cardId, role: userRole });
+
+
+      // Simulated loading time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      switch (cardId) {
+        case 'handbook':
+  dispatch({ type: 'SET_ACTIVE_SECTION', section: 'handbook', role: userRole });
+  dispatch({ type: 'RESET_CHECKED_ITEMS' }); // Reset any checked items
+  navigate(ROUTES.HANDBOOK.WELCOME); // Navigate to welcome page first
+  break;
+        case 'accountsRights':
+          navigate(ROUTES.USERCREATION.ROOT);
+          break;
+        case 'consultViaMap':
+          navigate(ROUTES.CONSULTVIAMAPS.ROOT);
+          break;
+        case 'projects':
+          navigate(ROUTES.PROJECTS.ROOT);
+          break;
+        case 'support':
+          navigate(ROUTES.SUPPORT.ROOT);
+          break;
+        default:
+          console.warn(`No route defined for card: ${cardId}`);
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
+      announceToScreenReader(ARIA_LABELS.STATUS.ERROR);
+    } finally {
+      hideLoading();
     }
   };
 
-  const handleSidebarItemClick = (page: string) => {
-    setSelectedPage(page);
-    if (!isSidebarExpanded) {
-      setIsSidebarExpanded(true);
-    }
-  };
 
-  const toggleSidebar = () => {
-    setIsSidebarExpanded((prev) => !prev);
+  const handleCloseMapModal = () => {
+    setMapModalOpen(false);
+    navigate(ROUTES.EXTERNALMAPS.ROOT); // Navigate to "External Maps" page after modal closes
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        overflow: "hidden",
-      }}
+    <Box 
+      sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflowY: 'auto' }}
+      role="main"
+      aria-label={ARIA_LABELS.SECTIONS.DASHBOARD}
     >
-      <AppBar
-        position="fixed"
-        sx={{
-          zIndex: theme.zIndex.drawer + 1,
-          backgroundColor: "#ffffff",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Adding shadow for embossed look
-          borderBottom: "1px solid #e0e0e0",
-          transform: "translateY(0)", // Ensures it's slightly lifted from the background
-          transition: "all 0.3s ease", // Smooth transition for any changes
-          "&:hover": {
-            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)", // Slightly more pronounced shadow on hover
-          },
-        }}
-      >
-        <Toolbar
-          sx={{
-            minHeight: appBarHeight,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {/* Sidebar Toggle and Logo */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              aria-label="toggle drawer"
-              onClick={toggleSidebar}
-              edge="start"
-              sx={{ mr: 2, color: "#C2185B" }}
-            >
-              {isSidebarExpanded ? <ChevronLeft /> : <ChevronRight />}
-            </IconButton>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={logo}
-                alt="Logo"
-                style={{ height: "30px", marginRight: "10px" }}
-              />
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{ color: "#3b3b3b", fontWeight: "bold" }}
-              >
-                Dali
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Search Bar */}
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              mx: 2,
-            }}
-          >
-            <Box
-              sx={{
-                position: "relative",
-                borderRadius: theme.shape.borderRadius,
-                backgroundColor: "#f1f3f4",
-                width: "100%",
-                maxWidth: 400,
-              }}
-            >
-              <InputBase
-                placeholder="Search…"
-                startAdornment={<SearchIcon />}
-                sx={{
-                  px: 1,
-                  width: "100%",
-                  py: 0.5,
-                }}
-              />
-            </Box>
-          </Box>
-
-          {/* Action Icons */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              sx={{
-                backgroundColor: "#C2185B",
-                color: "#ffffff",
-                "&:hover": {
-                  backgroundColor: "#b01750", // Slightly darker shade on hover
-                },
-                p: 1, // Padding to ensure the icon fits well within the button
-              }}
-            >
-              <NotificationsIcon />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                backgroundColor: "#C2185B",
-                color: "#ffffff",
-                "&:hover": {
-                  backgroundColor: "#b01750", // Slightly darker shade on hover
-                },
-                p: 1, // Padding to ensure the icon fits well within the button
-                ml: 2, // Margin left for spacing between buttons
-              }}
-            >
-              <SettingsIcon />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                backgroundColor: "#C2185B",
-                color: "#ffffff",
-                "&:hover": {
-                  backgroundColor: "#b01750",
-                },
-                p: 1, // Padding to ensure the icon fits well within the button
-                ml: 2, // Margin left for spacing between buttons
-              }}
-            >
-              <SettingsIcon />
-            </IconButton>
-
-            <Avatar
-              alt="User Name"
-              src="/static/images/avatar/1.jpg"
-              sx={{
-                backgroundColor: "#C2185B",
-                color: "#ffffff",
-                ml: 2, // Margin left for spacing between the avatar and the icon button
-              }}
-            />
-          </Box>
-        </Toolbar>
-      </AppBar>
-
-      <Box className="side-bar-content">
-        <Sidebar
-          isExpanded={isSidebarExpanded}
-          toggleSidebar={toggleSidebar}
-          onItemClick={handleSidebarItemClick}
-          drawerWidth={
-            isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth
-          }
-          sidebarItems={sidebarItems}
-        />
-
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "stretch",
-            minWidth: 0,
-            maxWidth: {
-              sm: `calc(100% - ${isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth}px)`,
-              xs: "100%",
-            },
-            ml: {
-              sm: `${isSidebarExpanded ? expandedDrawerWidth : collapsedDrawerWidth}px`,
-              xs: 0,
-            },
-            mt: `${appBarHeight}px`,
-            mb: `${bottomNavHeight}px`,
-            overflowX: "hidden",
-            overflowY: "hidden",
-            boxSizing: "border-box",
-          }}
-        >
-          {selectedPage === "chapters" && <Handbook />}
-          <Box>{renderPageContent()}</Box>
-        </Box>
-      </Box>
-
-      <BottomNavBar
-        selectedPage={selectedPage}
-        setSelectedPage={setSelectedPage}
+      <CustomAppBar
+        title="DALI - APPLICATIONS"
+        isSidebarOpen={false}
+        isDashboard={true}
       />
+      <Box 
+        sx={{ flexGrow: 1, p: 3, mt: '64px' }}
+        component="section"
+        aria-labelledby="dashboard-heading"
+      >
+        <h1 id="dashboard-heading" className="visually-hidden">
+          {ARIA_LABELS.SECTIONS.DASHBOARD}
+        </h1>
+        
+        <Grid 
+          container 
+          spacing={2} 
+          id="dashboardTiles"
+          role="grid"
+          aria-label={ARIA_LABELS.NAVIGATION.MAIN}
+        >
+          {dashboardCards.map((card) => (
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4} 
+              lg={2} 
+              key={card.id}
+              role="gridcell"
+            >
+              <DashboardTile 
+                {...card} 
+                onClick={() => hasRequiredRole(card.requiredRoles) && handleDashboardCardClick(card.id, card.title)}
+                aria-label={`${ARIA_LABELS.BUTTONS.EXPAND} ${card.title}`}
+                aria-expanded="false"
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+      <MapModal isOpen={isMapModalOpen} onClose={handleCloseMapModal} />
+
     </Box>
   );
 };
