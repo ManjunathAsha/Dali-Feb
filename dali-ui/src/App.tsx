@@ -71,7 +71,7 @@ function App() {
             <SidebarProvider>
               <Router>
                 <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-                  <SkipLink href="#main-content" aria-label={ARIA_LABELS.SKIP_TO_MAIN}>
+                  <SkipLink href="#main-content" aria-label={ARIA_LABELS.NAVIGATION.SKIP_LINK}>
                     Skip to main content
                   </SkipLink>
                   <Routes>
