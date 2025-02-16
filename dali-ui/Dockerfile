@@ -8,10 +8,9 @@ ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 ENV NODE_ENV=production
 
-# Install dependencies
+# Install dependencies (including devDependencies)
 COPY package*.json ./
-RUN npm ci
-RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object
+RUN npm ci --include=dev
 
 # Copy source code
 COPY . .
