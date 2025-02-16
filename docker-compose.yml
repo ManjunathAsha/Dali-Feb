@@ -1,0 +1,106 @@
+services:
+  gateway:
+    build:
+      context: ./Dali.Gateway
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      document-service:
+        condition: service_healthy
+      import-export-service:
+        condition: service_healthy
+    networks:
+      - dali-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  auth-service:
+    build:
+      context: ./Dali.AuthService
+    expose:
+      - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=185.84.140.118,1433;Database=DaliV6DT;User Id=sa;Password=DaliV6!Passw0rd;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - Jwt__Key=u7YKZcwB2Jm3AKx84IN1lm6xFYNbB1NEZqpJoSYVIAo=
+      - Jwt__Issuer=DALI-V6
+      - Jwt__Audience=DALI-Clients
+    networks:
+      - dali-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  document-service:
+    build:
+      context: ./Dali.DocumentService
+    expose:
+      - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=185.84.140.118,1433;Database=DaliV6DT;User Id=sa;Password=DaliV6!Passw0rd;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - Jwt__Key=u7YKZcwB2Jm3AKx84IN1lm6xFYNbB1NEZqpJoSYVIAo=
+      - Jwt__Issuer=DALI-V6
+      - Jwt__Audience=DALI-Clients
+    networks:
+      - dali-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  import-export-service:
+    build:
+      context: ./Dali.ImportExportService
+    expose:
+      - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=185.84.140.118,1433;Database=DaliV6DT;User Id=sa;Password=DaliV6!Passw0rd;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - Jwt__Key=u7YKZcwB2Jm3AKx84IN1lm6xFYNbB1NEZqpJoSYVIAo=
+      - Jwt__Issuer=DALI-V6
+      - Jwt__Audience=DALI-Clients
+      - TenantId=default
+      - UserId=system
+      - ImportSettings__MaxFileSize=10485760
+      - ImportSettings__AllowedFileTypes=.xlsx,.xls,.csv
+      - ImportSettings__TemporaryStoragePath=/tmp/imports
+    networks:
+      - dali-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ui:
+    build:
+      context: ./dali-ui
+      args:
+        - REACT_APP_API_URL=http://localhost:8080/api
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080/api
+    networks:
+      - dali-network
+    depends_on:
+      - gateway
+
+networks:
+  dali-network:
+    driver: bridge
