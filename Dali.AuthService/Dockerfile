@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y curl
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
+# Copy Directory.Build.props first
+COPY ["Directory.Build.props", "../Directory.Build.props"]
 COPY ["Auth.API.csproj", "./"]
 
 # Clear NuGet cache and configure for Linux
