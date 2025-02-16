@@ -90,8 +90,7 @@ services:
   ui:
     image: dali-feb-ui
     build:
-      context: ./dali-ui
-      dockerfile: ./Dockerfile
+      context: dali-ui
       args:
         REACT_APP_API_URL: http://localhost:8080/api
     ports:
