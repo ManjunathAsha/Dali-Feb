@@ -6,9 +6,8 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy Directory.Build.props first
-COPY ["Directory.Build.props", "../Directory.Build.props"]
-COPY ["Dali.DocumentService.csproj", "./"]
+# Copy everything first to include Directory.Build.props
+COPY . .
 
 # Clear NuGet cache and configure for Linux
 RUN dotnet nuget locals all --clear
@@ -33,7 +32,6 @@ ENV NUGET_CONFIG=/root/NuGet.Config
 RUN dotnet restore "Dali.DocumentService.csproj" --disable-parallel || \
     (sleep 5 && dotnet restore "Dali.DocumentService.csproj" --disable-parallel)
 
-COPY . .
 RUN dotnet build "Dali.DocumentService.csproj" -c Release -o /app/build
 
 FROM build AS publish

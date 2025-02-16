@@ -7,9 +7,8 @@ RUN apt-get update && apt-get install -y curl
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy Directory.Build.props first
-COPY ["Directory.Build.props", "../Directory.Build.props"]
-COPY ["Auth.API.csproj", "./"]
+# Copy everything first to include Directory.Build.props
+COPY . .
 
 # Clear NuGet cache and configure for Linux
 RUN dotnet nuget locals all --clear
@@ -34,7 +33,6 @@ ENV NUGET_CONFIG=/root/NuGet.Config
 RUN dotnet restore "Auth.API.csproj" --disable-parallel --force || \
     (sleep 5 && dotnet restore "Auth.API.csproj" --disable-parallel --force)
 
-COPY . .
 RUN dotnet build "Auth.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
