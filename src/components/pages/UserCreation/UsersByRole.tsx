@@ -369,7 +369,7 @@ const UsersByRole: React.FC = () => {
       }
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Roles/name/${role}/users`,
+        `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Roles/name/${role}/users`,
         {
           method: 'GET',
           headers: {
