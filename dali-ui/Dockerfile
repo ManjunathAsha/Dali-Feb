@@ -11,6 +11,7 @@ ENV NODE_ENV=production
 # Install dependencies
 COPY package*.json ./
 RUN npm ci
+RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object
 
 # Copy source code
 COPY . .
