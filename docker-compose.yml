@@ -88,12 +88,12 @@ services:
       retries: 3
 
   ui:
-    image: dali-feb-ui
+    container_name: dali-ui
     build:
       context: ./dali-ui
       dockerfile: ./Dockerfile
       args:
-        REACT_APP_API_URL: http://185.84.140.118:8080/api
+        - REACT_APP_API_URL=http://185.84.140.118:8080/api
     ports:
       - "3000:80"
     environment:
