@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { getApiUrl } from '../config/apiConfig';
 
 const api = axios.create({
-  baseURL: (window as any).API_URL || 'http://185.84.140.118:8080/api',
+  baseURL: getApiUrl(),
   headers: {
     'Content-Type': 'application/json'
   }

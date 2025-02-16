@@ -3,10 +3,16 @@ import { Container, Paper, Typography, TextField, Button, Box, InputAdornment, L
 import { AccountCircle, Https } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/AuthContext';
+import api from '../../api/axiosConfig';
+import { getApiUrl } from '../../config/apiConfig';
 import logo from '../../assets/dali-logo.png';
 import '../../scss/Login.scss';
 import ForgotPassword from './ForgotPassword';
-import api from '../../api/axiosConfig';
+
+// Ensure API URL is set
+if (!(window as any).API_URL) {
+  (window as any).API_URL = getApiUrl();
+}
 
 interface LoginRequestDto {
   email: string;

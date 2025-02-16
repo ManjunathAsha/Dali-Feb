@@ -5,14 +5,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { LanguageProvider } from './context/LanguageContext';
 import commonTranslations from './common/languages/nl'; // Import your translations
+import { getApiUrl } from './config/apiConfig';
 
 // Add error logging
-const API_URL = 'http://185.84.140.118:8080/api';
 console.log('Environment:', process.env);
-console.log('API URL:', API_URL);
+console.log('API URL:', getApiUrl());
 
 // Make API_URL globally available
-(window as any).API_URL = API_URL;
+(window as any).API_URL = getApiUrl();
 
 class ErrorBoundary extends React.Component<any, { hasError: boolean, error: any }> {
   constructor(props: any) {
