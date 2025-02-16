@@ -1,0 +1,177 @@
+@import '../variables.scss';
+
+.dali-login {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  padding: 16px;
+  box-sizing: border-box;
+
+  &-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+    height: 80vh;
+    margin-bottom: 80px;
+
+    @media (max-width: 600px) {
+      padding: 0 8px;
+    }
+  }
+
+  &-paper {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 40px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (max-width: 600px) {
+      padding: 24px;
+      border-radius: 8px;
+    }
+  }
+
+  &-logo {
+    width: 180px;
+    height: auto;
+    margin-bottom: 24px;
+    object-fit: contain;
+
+    @media (max-width: 600px) {
+      width: 140px;
+      margin-bottom: 16px;
+    }
+  }
+
+  &-form {
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  &-button {
+    margin: 24px 0;
+    padding: 12px;
+    background-color: $dali-red !important;
+    color: white !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &:hover {
+      background-color: darken($dali-red, 5%) !important;
+      box-shadow: 0 4px 12px rgba($dali-red, 0.2) !important;
+    }
+
+    @media (max-width: 600px) {
+      margin: 16px 0;
+      padding: 10px;
+    }
+  }
+
+  &-input {
+    width: 100%;
+    margin-bottom: 0;
+
+    .MuiOutlinedInput-root {
+      background-color: white;
+      transition: all 0.2s ease-in-out;
+      height: 44px;
+
+      &:hover {
+        background-color: rgba($dali-gray-2, 0.04);
+      }
+
+      &.Mui-focused .MuiOutlinedInput-notchedOutline {
+        border-color: $dali-red !important;
+        border-width: 2px;
+      }
+
+      .MuiInputAdornment-root {
+        color: $dali-gray-2;
+        margin-right: 8px;
+
+        .MuiSvgIcon-root {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .MuiFormHelperText-root {
+      margin-left: 0;
+      margin-top: 4px;
+    }
+
+    input::placeholder {
+      color: $dali-gray-2;
+      opacity: 0.8;
+    }
+  }
+
+  &-links {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+  }
+
+  &-link {
+    color: $dali-red !important;
+    text-decoration: none !important;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      color: darken($dali-red, 10%) !important;
+      text-decoration: underline !important;
+    }
+  }
+}
+
+.dali-forgotpassword {
+  &-modalBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    width: 400px;
+
+    @media (max-width: 600px) {
+      padding: 24px;
+      width: calc(100% - 32px);
+    }
+  }
+
+  &-modalButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+}

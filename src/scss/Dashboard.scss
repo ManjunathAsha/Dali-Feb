@@ -1,0 +1,20 @@
+/* Dashboard styles */
+#dashboardTiles {
+  .MuiGrid-item {
+    display: flex;
+  }
+
+}
+ 
+
+@media (max-width: 1000px) {
+  #wrapper {
+    flex-direction: column;
+  }
+}
+
+.dali-align-centered {
+  display: block;
+  text-align: center;
+}
+
