@@ -4,7 +4,7 @@ FROM node:18-alpine as build
 WORKDIR /app
 
 # Add build argument for API URL
-ARG REACT_APP_API_URL
+ARG REACT_APP_API_URL=http://185.84.140.118:8080/api
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 # Install dependencies
@@ -14,23 +14,20 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the app
-RUN npm run build
+# Build the app with the environment variable
+RUN REACT_APP_API_URL=$REACT_APP_API_URL npm run build
 
 # Production stage
 FROM nginx:alpine
 
-# Copy built assets
+# Copy the build output
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy nginx config
+# Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Add runtime environment variable support
-RUN apk add --no-cache bash
-COPY env.sh /docker-entrypoint.d/
-RUN chmod +x /docker-entrypoint.d/env.sh
-
+# Expose port 80
 EXPOSE 80
 
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
