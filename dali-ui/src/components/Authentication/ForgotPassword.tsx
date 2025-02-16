@@ -85,7 +85,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
       const clientUrl = process.env.REACT_APP_CLIENT_URL || 'http://localhost';
       const resetUrl = `${clientUrl}/reset-password?email=${encodeURIComponent(email)}&token=`;
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/forgot-password`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

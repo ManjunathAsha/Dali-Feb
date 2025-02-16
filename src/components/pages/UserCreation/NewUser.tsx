@@ -374,7 +374,7 @@ const NewUser: React.FC<NewUserProps> = ({ isModalOpen, onClose, toggleSidebar }
         const userToken = localStorage.getItem('userToken');
         if (!userToken) return;
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Tenant`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Tenant`, {
           method: 'GET',
           headers: {
             'accept': 'text/plain',
@@ -426,7 +426,7 @@ const NewUser: React.FC<NewUserProps> = ({ isModalOpen, onClose, toggleSidebar }
         const userToken = localStorage.getItem('userToken');
         if (!userToken) return;
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Roles`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Roles`, {
           method: 'GET',
           headers: {
             'accept': 'text/plain',
@@ -494,7 +494,7 @@ const NewUser: React.FC<NewUserProps> = ({ isModalOpen, onClose, toggleSidebar }
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/register`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/register`, {
         method: 'POST',
         headers: {
           'accept': '*/*',

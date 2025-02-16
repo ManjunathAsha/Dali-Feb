@@ -369,7 +369,7 @@ const UsersByRole: React.FC = () => {
       }
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Roles/name/${role}/users`,
+        `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Roles/name/${role}/users`,
         {
           method: 'GET',
           headers: {
@@ -433,7 +433,7 @@ const UsersByRole: React.FC = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Roles`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Roles`, {
           method: 'GET',
           headers: {
             'accept': 'text/plain',
@@ -501,7 +501,7 @@ const UsersByRole: React.FC = () => {
       }
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users/${selectedUser.id}/toggle-status`,
+        `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users/${selectedUser.id}/toggle-status`,
         {
           method: 'POST',
           headers: {
@@ -593,7 +593,7 @@ const UsersByRole: React.FC = () => {
           setIsEditConfirmationOpen(false);
 
           const response = await authenticatedFetch(
-            `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users/${modalData.id}/role`,
+            `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users/${modalData.id}/role`,
             {
               method: 'PUT',
               headers: {

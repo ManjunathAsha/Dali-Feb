@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { FilterResponse, FilterDocumentResponse, FilterParams } from '../data/interface';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('userToken');
