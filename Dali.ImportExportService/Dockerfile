@@ -6,7 +6,16 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["Dali.ImportExportService.csproj", "./"]
-RUN dotnet restore "Dali.ImportExportService.csproj"
+
+# Clear NuGet cache and configure for Linux
+RUN dotnet nuget locals all --clear
+ENV NUGET_PACKAGES=/root/.nuget/packages
+RUN mkdir -p /root/.nuget/packages
+
+# Restore with retry logic
+RUN dotnet restore "Dali.ImportExportService.csproj" --disable-parallel || \
+    (sleep 5 && dotnet restore "Dali.ImportExportService.csproj" --disable-parallel)
+
 COPY . .
 RUN dotnet build "Dali.ImportExportService.csproj" -c Release -o /app/build
 
