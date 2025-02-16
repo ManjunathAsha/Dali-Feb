@@ -300,7 +300,7 @@ const LastLogin: React.FC = () => {
       setError(null);
 
       const response = await authenticatedFetch(
-        `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users`
+        `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users`
       );
 
       if (!response.ok) {
@@ -367,7 +367,7 @@ const LastLogin: React.FC = () => {
       setError(null);
 
       const response = await authenticatedFetch(
-        `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users/${selectedUser.id}/toggle-status`,
+        `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users/${selectedUser.id}/toggle-status`,
         { method: 'POST' }
       );
 
@@ -432,7 +432,7 @@ const LastLogin: React.FC = () => {
           setEditData(null);
 
           const response = await authenticatedFetch(
-            `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users/${editData.id}/role`,
+            `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users/${editData.id}/role`,
             {
               method: 'PUT',
               headers: {

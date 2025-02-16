@@ -455,7 +455,7 @@ const UserOverview: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -527,7 +527,7 @@ const UserOverview: React.FC = () => {
           setIsEditConfirmationOpen(false);
 
           const response = await authenticatedFetch(
-            `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users/${modalData.id}/role`,
+            `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users/${modalData.id}/role`,
             {
               method: 'PUT',
               headers: {
@@ -608,7 +608,7 @@ const UserOverview: React.FC = () => {
       }
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Auth/users/${userToBlock.id}/toggle-status`,
+        `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Auth/users/${userToBlock.id}/toggle-status`,
         {
           method: 'POST',
           headers: {
@@ -722,7 +722,7 @@ const UserOverview: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Tenant`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Tenant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -787,7 +787,7 @@ const UserOverview: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://185.84.140.118:8080'}/api/Roles`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/api/Roles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

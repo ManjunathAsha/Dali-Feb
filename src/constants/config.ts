@@ -1,6 +1,6 @@
 export const CONFIG = {
     API: {
-      BASE_URL: process.env.REACT_APP_API_URL || 'http://185.84.140.118:3000',
+      BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:3000',
       TIMEOUT: 5000,
     },
     AUTH: {
