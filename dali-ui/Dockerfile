@@ -27,9 +27,13 @@ COPY --from=build /app/build /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create a dynamic config script
+# Create a dynamic config script that properly creates a JavaScript file
 RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-config.sh && \
-    echo 'echo "window.REACT_APP_API_URL=\"$REACT_APP_API_URL\";" > /usr/share/nginx/html/config.js' >> /docker-entrypoint.d/40-config.sh && \
+    echo 'cat > /usr/share/nginx/html/env-config.js << EOF' >> /docker-entrypoint.d/40-config.sh && \
+    echo 'window.env = {' >> /docker-entrypoint.d/40-config.sh && \
+    echo '  REACT_APP_API_URL: "${REACT_APP_API_URL}"' >> /docker-entrypoint.d/40-config.sh && \
+    echo '};' >> /docker-entrypoint.d/40-config.sh && \
+    echo 'EOF' >> /docker-entrypoint.d/40-config.sh && \
     chmod +x /docker-entrypoint.d/40-config.sh
 
 EXPOSE 80

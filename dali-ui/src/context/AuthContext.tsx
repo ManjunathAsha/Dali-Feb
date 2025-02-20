@@ -27,6 +27,11 @@ function parseJwt(token: string) {
   }
 }
 
+const hasAdminPrivileges = (role: string | undefined) => {
+  if (!role) return false;
+  return role.toLowerCase() === 'admin' || role.toLowerCase().includes('admin');
+};
+
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('userToken'));
   const [userInfo, setUserInfo] = useState<UserInfo | null>(() => {
@@ -48,9 +53,25 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return null;
   });
 
-  const hasAdminPrivileges = (role: string | undefined) => {
-    return role === 'admin' || role === 'systemadmin';
-  };
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('userToken', token);
+      const decoded = parseJwt(token);
+      if (decoded) {
+        const role = decoded.role || decoded.roles?.[0];
+        setUserInfo({
+          sub: decoded.userId || decoded.sub || decoded.nameid,
+          name: decoded.userName || decoded.given_name || decoded.name,
+          role: role,
+          tenantId: decoded.tenantId || decoded.TenantId,
+          isAdmin: hasAdminPrivileges(role)
+        });
+      }
+    } else {
+      localStorage.removeItem('userToken');
+      setUserInfo(null);
+    }
+  }, [token]);
 
   const login = (newToken: string) => {
     const decoded = parseJwt(newToken);
