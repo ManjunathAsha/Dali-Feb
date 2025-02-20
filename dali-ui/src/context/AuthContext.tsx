@@ -17,7 +17,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-function parseJwt(token: string) {
+// Helper functions defined outside of component
+const parseJwt = (token: string) => {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -25,48 +26,40 @@ function parseJwt(token: string) {
   } catch (e) {
     return null;
   }
-}
+};
 
 const hasAdminPrivileges = (role: string | undefined) => {
   if (!role) return false;
   return role.toLowerCase() === 'admin' || role.toLowerCase().includes('admin');
 };
 
+const createUserInfo = (decoded: any): UserInfo | null => {
+  if (!decoded) return null;
+  const role = decoded.role || decoded.roles?.[0];
+  return {
+    sub: decoded.userId || decoded.sub || decoded.nameid,
+    name: decoded.userName || decoded.given_name || decoded.name,
+    role: role,
+    tenantId: decoded.tenantId || decoded.TenantId,
+    isAdmin: hasAdminPrivileges(role)
+  };
+};
+
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('userToken'));
+  // Initialize state with stored token
+  const [token, setToken] = useState<string | null>(localStorage.getItem('userToken'));
+  
+  // Initialize userInfo based on stored token
   const [userInfo, setUserInfo] = useState<UserInfo | null>(() => {
     const storedToken = localStorage.getItem('userToken');
-    if (storedToken) {
-      const decoded = parseJwt(storedToken);
-      if (decoded) {
-        const role = decoded.role || decoded.roles?.[0];
-        const newUserInfo = {
-          sub: decoded.userId || decoded.sub || decoded.nameid,
-          name: decoded.userName || decoded.given_name || decoded.name,
-          role: role,
-          tenantId: decoded.tenantId || decoded.TenantId,
-          isAdmin: hasAdminPrivileges(role)
-        };
-        return newUserInfo;
-      }
-    }
-    return null;
+    return storedToken ? createUserInfo(parseJwt(storedToken)) : null;
   });
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('userToken', token);
       const decoded = parseJwt(token);
-      if (decoded) {
-        const role = decoded.role || decoded.roles?.[0];
-        setUserInfo({
-          sub: decoded.userId || decoded.sub || decoded.nameid,
-          name: decoded.userName || decoded.given_name || decoded.name,
-          role: role,
-          tenantId: decoded.tenantId || decoded.TenantId,
-          isAdmin: hasAdminPrivileges(role)
-        });
-      }
+      setUserInfo(createUserInfo(decoded));
     } else {
       localStorage.removeItem('userToken');
       setUserInfo(null);
@@ -74,33 +67,22 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [token]);
 
   const login = (newToken: string) => {
-    const decoded = parseJwt(newToken);
-    if (decoded) {
-      const role = decoded.role || decoded.roles?.[0];
-      const newUserInfo = {
-        sub: decoded.userId || decoded.sub || decoded.nameid,
-        name: decoded.userName || decoded.given_name || decoded.name,
-        role: role,
-        tenantId: decoded.tenantId || decoded.TenantId,
-        isAdmin: hasAdminPrivileges(role)
-      };
-      console.log('Setting user info:', newUserInfo);
-      setUserInfo(newUserInfo);
-      setToken(newToken);
-      localStorage.setItem('userToken', newToken);
-    }
+    setToken(newToken);
   };
 
   const logout = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('refreshToken');
-    setUserInfo(null);
     setToken(null);
-    window.location.href = '/';
+  };
+
+  const value = {
+    userInfo,
+    token,
+    login,
+    logout
   };
 
   return (
-    <AuthContext.Provider value={{ userInfo, token, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
